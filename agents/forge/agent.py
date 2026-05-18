@@ -64,9 +64,43 @@ class ForgeAgent:
         self.github = GithubTool()
         logger.info(f"{self.name} inicializado | sandbox={self.sandbox_mode}")
 
+    def auto_deploy(self, message: str = "") -> dict:
+        """Push all changes to GitHub automatically."""
+        import subprocess
+        repo_path = Path(__file__).parent.parent.parent
+        timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
+        commit_msg = f"auto: {message or 'actualizacion automatica'} [{timestamp}]"
+        try:
+            subprocess.run(["git", "add", "."], cwd=repo_path, check=True, capture_output=True)
+            result = subprocess.run(
+                ["git", "commit", "-m", commit_msg],
+                cwd=repo_path, capture_output=True, text=True
+            )
+            if "nothing to commit" in result.stdout or result.returncode not in [0, 1]:
+                return {"status": "ok", "message": "Nada que subir — repositorio al día"}
+            push = subprocess.run(
+                ["git", "push", "origin", "main"],
+                cwd=repo_path, capture_output=True, text=True, timeout=30
+            )
+            if push.returncode == 0:
+                try:
+                    from core.memory.chroma_store import ChromaStore
+                    ChromaStore().store("strategies", f"Deploy automático: {commit_msg}",
+                                        metadata={"agent": "forge", "event_type": "deploy"})
+                except Exception:
+                    pass
+                return {"status": "ok", "message": f"✅ Deploy exitoso: {commit_msg}"}
+            else:
+                return {"status": "error", "message": f"Push falló: {push.stderr[:200]}"}
+        except Exception as e:
+            return {"status": "error", "message": str(e)}
+
     def run(self, task: str, context: dict = None) -> dict:
         logger.info(f"{self.name} ejecutando: {task[:80]}")
         task_lower = task.lower()
+        if any(w in task_lower for w in ["deploy", "push", "subir", "github", "commit"]):
+            msg = context.get("message", task) if context else task
+            return {"agent": self.name, **self.auto_deploy(msg[:80])}
         if "monitor" in task_lower or "log" in task_lower:
             logs = self.monitor_logs()
             return {"agent": self.name, "status": "ok", "logs": logs}

@@ -1,0 +1,36 @@
+{
+  "mes": "Mayo-Junio 2026",
+  "creado": "2026-05-18T18:30:00",
+  "perfil": "Asesor financiero · Banca privada · Tarragona/Reus",
+  "objetivo": "Generar confianza → atraer leads empresarios → conversaciones privadas",
+  "narrativa": "Los mercados dan señales. Saber leerlas es la diferencia entre conservar patrimonio y perderlo.",
+  "total_posts": 15,
+  "semanas": [
+    {
+      "nombre": "Semana 1 — El mercado habla, ¿escuchas?",
+      "dias": ["18-24 Mayo"],
+      "posts": [
+        {"fecha": "Dom 18", "formato": "Carrusel 5 slides", "tema": "Oro cae 3%", "hora": "19:00", "objetivo": "Educación"},
+        {"fecha": "Lun 19", "formato": "Reel 30-45s", "tema": "Error del empresario con dinero", "hora": "12:00", "objetivo": "Leads"},
+        {"fecha": "Mar 20", "formato": "Imagen única", "tema": "IBEX máximos 17.755pts", "hora": "18:00", "objetivo": "Actualidad"},
+        {"fecha": "Mié 21", "formato": "Stories 5 slides", "tema": "Behind the scenes", "hora": "09:00", "objetivo": "Humanizar"},
+        {"fecha": "Jue 22", "formato": "Carrusel 6 slides", "tema": "5 señales necesitas asesor", "hora": "12:00", "objetivo": "Lead magnet"},
+        {"fecha": "Vie 23", "formato": "Reel tendencia", "tema": "Bitcoin $76k caro o barato", "hora": "18:00", "objetivo": "Alcance"},
+        {"fecha": "Sáb 24", "formato": "Imagen+pregunta", "tema": "Encuesta 100k€", "hora": "11:00", "objetivo": "Engagement"}
+      ]
+    },
+    {
+      "nombre": "Semana 2 — Toma el control de tu patrimonio",
+      "dias": ["25-31 Mayo"],
+      "posts": [
+        {"fecha": "Lun 26", "formato": "Carrusel", "tema": "Respuesta encuesta 100k€", "hora": "12:00", "objetivo": "Conversión"},
+        {"fecha": "Mar 27", "formato": "Imagen", "tema": "EUR/USD 1.17 riesgo divisa", "hora": "18:00", "objetivo": "Educación"},
+        {"fecha": "Mié 28", "formato": "Reel cara a cámara", "tema": "Por qué dejé la banca", "hora": "19:00", "objetivo": "Confianza"},
+        {"fecha": "Jue 29", "formato": "Carrusel educativo", "tema": "Jubilación en España", "hora": "12:00", "objetivo": "Lead magnet"},
+        {"fecha": "Vie 30", "formato": "Imagen", "tema": "Cierre semana mercados", "hora": "18:00", "objetivo": "Comunidad"},
+        {"fecha": "Sáb 31", "formato": "Carrusel resumen", "tema": "Mayo en mercados", "hora": "11:00", "objetivo": "Autoridad"},
+        {"fecha": "Dom 1 Jun", "formato": "Reel/Imagen", "tema": "CTA JUNIO nueva oportunidad", "hora": "19:00", "objetivo": "Conversión"}
+      ]
+    }
+  ]
+}
