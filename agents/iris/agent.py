@@ -11,6 +11,8 @@ from loguru import logger
 
 load_dotenv(Path(__file__).parent.parent.parent / ".env")
 
+from core.tools.llm_router import LLMRouter
+
 AGENT_NAME = "iris"
 SYSTEM_PROMPT_PATH = Path(__file__).parent / "prompts" / "system.md"
 
@@ -99,6 +101,7 @@ class IrisAgent:
         self.sandbox_mode = os.getenv("AGENT_SANDBOX_MODE", "true").lower() == "true"
         self.instagram = InstagramTool()
         self.cortex = self._load_cortex()
+        self.router = LLMRouter()
         CONTENT_PLANS_DIR.mkdir(parents=True, exist_ok=True)
         REVIEWS_DIR.mkdir(parents=True, exist_ok=True)
         logger.info(f"{self.name} — Directora Redes | sandbox={self.sandbox_mode}")
@@ -150,11 +153,14 @@ class IrisAgent:
         if "caption" in task_lower:
             caption = self.create_caption(task, ctx.get("tone", "profesional"))
             return {"agent": self.name, "status": "ok", "caption": caption}
-        if "analizar" in task_lower or "métrica" in task_lower or "insight" in task_lower:
+        if "analiza" in task_lower or "perfil" in task_lower or "análisis" in task_lower or "métrica" in task_lower or "insight" in task_lower:
+            if "perfil" in task_lower or "analiza" in task_lower:
+                analisis = self.analyze_instagram_profile()
+                return {"agent": self.name, "status": "ok", "analisis": analisis}
             media = self.instagram.get_media(limit=10)
             return {"agent": self.name, "status": "ok", "media": media}
-        if "estrategia" in task_lower or "growth" in task_lower:
-            estrategia = self.estrategia_crecimiento()
+        if "crecimiento" in task_lower or "estrategia" in task_lower or "growth" in task_lower:
+            estrategia = self.growth_strategy()
             return {"agent": self.name, "status": "ok", "estrategia": estrategia}
         if "programar" in task_lower or "schedule" in task_lower:
             caption = self.create_caption(task)
@@ -522,20 +528,181 @@ class IrisAgent:
         return todas[:n]
 
     def create_caption(self, topic: str, tone: str = "profesional") -> str:
-        hashtags = [
+        fallback_hashtags = [
             "#asesorfinanciero", "#planificacionpatrimonial", "#inversionesinteligentes",
             "#bancaprivada", "#educacionfinanciera", "#ahorroeinversion",
             "#emprendedores", "#patrimonio", "#mercadofinanciero",
         ]
-        base = (
+        fallback = (
             f"¿Sabías que...? {topic}\n\n"
             f"En un entorno donde los tipos de interés y la inflación marcan el ritmo, "
             f"tener una estrategia clara marca la diferencia.\n\n"
             f"En Alexandre trabajamos para ayudarte a tomar las mejores decisiones "
             f"financieras, adaptadas a tu perfil y objetivos.\n\n"
             f"¿Hablamos?\n\n"
+            + " ".join(fallback_hashtags[:6])
         )
-        return base + " ".join(hashtags[:6])
+        try:
+            # Enriquecer con datos de mercado si están disponibles
+            market_context = ""
+            noticias = self._get_noticias_relevantes(topic)
+            if noticias:
+                titulos = "; ".join(n.get("title", "") for n in noticias[:2])
+                market_context = f"\nContexto de mercado actual: {titulos}"
+
+            tone_instructions = {
+                "profesional": "tono profesional y de autoridad financiera",
+                "cercano": "tono cálido, cercano y accesible para el público general",
+                "educativo": "tono educativo, con una pregunta inicial que genera curiosidad",
+                "urgencia": "tono que transmite oportunidad y cierta urgencia sin ser alarmista",
+            }.get(tone, "tono profesional y de autoridad financiera")
+
+            prompt = f"""Eres el asesor financiero Alexandre, basado en Tarragona (España).
+Creas contenido para Instagram dirigido a empresarios, autónomos y profesionales con patrimonio en España.
+
+Escribe un caption de Instagram sobre: {topic}
+Tono: {tone_instructions}{market_context}
+
+Instrucciones:
+- Máximo 2200 caracteres en total
+- Empieza con un gancho potente (pregunta, dato impactante o afirmación controversial)
+- 2-3 párrafos cortos con valor real
+- Cierra con CTA claro (¿Hablamos? / Escríbeme / Link en bio)
+- Incluye 6-8 hashtags relevantes del nicho financiero español al final
+- Hashtags obligatorios: #asesorfinanciero #planificacionpatrimonial #tarragona
+- Usa emojis con moderación (máx 3-4 en todo el texto)
+- El texto debe sonar auténtico, no corporativo
+
+Devuelve SOLO el caption listo para publicar, sin explicaciones adicionales."""
+
+            caption = self.router.call(
+                prompt,
+                task_description=f"crear caption Instagram financiero sobre {topic[:50]}",
+                max_tokens=800,
+            )
+            # Validar longitud máxima Instagram
+            if caption and len(caption.strip()) > 50:
+                return caption.strip()[:2200]
+            return fallback
+        except Exception as e:
+            logger.error(f"IRIS create_caption LLM error: {e} — usando fallback")
+            return fallback
+
+    def analyze_instagram_profile(self) -> dict:
+        """Analiza el perfil de Instagram. Si hay token usa la API real, si no genera análisis con LLM."""
+        token = os.getenv("INSTAGRAM_ACCESS_TOKEN", "")
+        real_data = {}
+
+        if token:
+            try:
+                media = self.instagram.get_media(limit=20)
+                audience = self.instagram.get_audience_insights()
+                real_data = {"media_count": len(media), "audience": audience, "recent_posts": media[:5]}
+                logger.info("IRIS: Analizando perfil con datos reales de Instagram API")
+            except Exception as e:
+                logger.warning(f"IRIS: Error leyendo API Instagram: {e} — usando análisis LLM")
+
+        try:
+            if real_data:
+                data_context = f"Datos reales del perfil: {json.dumps(real_data, default=str)[:800]}"
+            else:
+                data_context = (
+                    "Perfil sin datos API todavía. Perfil conocido: asesor financiero independiente llamado Alexandre, "
+                    "ubicado en Tarragona, España. Nicho: planificación patrimonial, inversiones, banca privada. "
+                    "Audiencia objetivo: empresarios, autónomos y profesionales con patrimonio en España. "
+                    "Fase actual: cuenta nueva o con 0-500 seguidores, publicando contenido educativo y de mercado."
+                )
+
+            prompt = f"""Eres un experto en marketing digital para el sector financiero en España, especializado en Instagram.
+
+{data_context}
+
+Genera un análisis estratégico completo del perfil de Instagram para este asesor financiero. El análisis debe incluir:
+
+1. PUNTOS FUERTES (3 puntos): qué tiene a favor este nicho y perfil para crecer en Instagram
+2. PUNTOS DÉBILES / RIESGOS (3 puntos): obstáculos típicos del sector financiero en redes
+3. 5 RECOMENDACIONES CONCRETAS DE CRECIMIENTO: acciones específicas y medibles para los próximos 30 días
+4. MEJORES HORAS PARA PUBLICAR: basado en audiencia financiera española (con horarios exactos y días)
+5. TIPOS DE CONTENIDO QUE MEJOR FUNCIONAN: en el nicho financiero español en Instagram (con ejemplos)
+
+Sé específico, práctico y directo. Usa datos del sector si los conoces.
+Devuelve el análisis en formato estructurado con los 5 apartados claramente diferenciados."""
+
+            analisis_texto = self.router.call(
+                prompt,
+                task_description="análisis estratégico perfil Instagram asesor financiero España",
+                max_tokens=1200,
+            )
+
+            return {
+                "fuente": "instagram_api" if real_data else "analisis_llm",
+                "fecha": datetime.date.today().isoformat(),
+                "analisis": analisis_texto.strip() if analisis_texto else "No se pudo generar el análisis",
+                "datos_raw": real_data if real_data else {},
+            }
+        except Exception as e:
+            logger.error(f"IRIS analyze_instagram_profile error: {e}")
+            return {
+                "fuente": "fallback",
+                "fecha": datetime.date.today().isoformat(),
+                "analisis": (
+                    "Análisis no disponible. Puntos fuertes: nicho financiero con alta capacidad adquisitiva, "
+                    "contenido evergreen con alto valor. Recomendaciones: publicar 4-5 veces/semana, "
+                    "usar carruseles educativos, historias diarias, reels de análisis de mercado."
+                ),
+                "datos_raw": {},
+            }
+
+    def growth_strategy(self) -> dict:
+        """Genera con LLM una estrategia de crecimiento de 30 días para Instagram."""
+        try:
+            prompt = """Eres un experto en growth marketing para Instagram en el sector financiero español.
+
+El cliente es Alexandre, asesor financiero independiente en Tarragona (España).
+Perfil: cuenta nueva/pequeña (0-500 seguidores), nicho planificación patrimonial, audiencia objetivo empresarios y autónomos con patrimonio en España.
+Objetivo: conseguir 500+ seguidores orgánicos en 30 días y generar 5-10 leads cualificados.
+
+Diseña una ESTRATEGIA DE CRECIMIENTO DETALLADA para 30 días con:
+
+SEMANA 1 — FUNDAMENTOS (días 1-7):
+- Optimización de perfil (bio, foto, highlights)
+- Frecuencia y tipos de contenido
+- 3 acciones específicas de engagement
+
+SEMANA 2 — ACELERACIÓN (días 8-14):
+- Tácticas de colaboración o menciones
+- Hashtag strategy específica para finanzas España
+- Tipo de contenido viral del nicho
+
+SEMANA 3 — CONVERSIÓN (días 15-21):
+- Lead magnets para Instagram
+- CTA en contenidos
+- Estrategia de Stories para captar leads
+
+SEMANA 4 — CONSOLIDACIÓN (días 22-30):
+- Analítica y ajuste
+- Primeras colaboraciones
+- Plan de sostenibilidad
+
+MÉTRICAS OBJETIVO SEMANALES: seguidores nuevos, engagement rate, DMs recibidos
+
+Sé muy específico con ejemplos de posts, hashtags y horarios. Adapta todo al mercado financiero español."""
+
+            estrategia_texto = self.router.call(
+                prompt,
+                task_description="estrategia crecimiento 30 días Instagram asesor financiero España",
+                max_tokens=1500,
+            )
+
+            return {
+                "tipo": "estrategia_30_dias",
+                "generado": datetime.date.today().isoformat(),
+                "objetivo": "500 seguidores + 5-10 leads en 30 días",
+                "estrategia": estrategia_texto.strip() if estrategia_texto else "No disponible",
+            }
+        except Exception as e:
+            logger.error(f"IRIS growth_strategy error: {e}")
+            return self.estrategia_crecimiento()
 
     def schedule_post(self, caption: str, image_prompt: str, publish_at: str) -> dict:
         logger.info(f"Programando post para {publish_at}")

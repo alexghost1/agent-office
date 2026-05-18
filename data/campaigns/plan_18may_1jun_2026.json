@@ -1,0 +1,207 @@
+{
+  "nombre": "Plan de Contenido 18 Mayo — 1 Junio 2026",
+  "creado": "2026-05-18",
+  "autor": "IRIS Agent — Alexandre Asesor Financiero",
+  "total_posts": 14,
+  "periodo": {
+    "inicio": "2026-05-18",
+    "fin": "2026-06-01"
+  },
+  "posts": [
+    {
+      "id": 1,
+      "fecha": "2026-05-18",
+      "dia_semana": "Domingo",
+      "formato": "Carrusel",
+      "tema": "El oro cae 3%",
+      "hora": "19:00",
+      "categoria": "educacion",
+      "caption_completo": "🟡 El oro cae un 3% esta semana. ¿Pánico o oportunidad?\n\nMuchos inversores entran en modo pánico cuando ven caídas. Pero los que entienden cómo funciona el oro como activo refugio, saben que estos momentos son conversaciones, no alarmas.\n\nDesliza para entender qué está pasando realmente en el mercado del oro y cómo afecta a tu cartera en 2026.\n\n¿Tienes exposición a commodities? Cuéntame en comentarios 👇\n\n#oroeinversión #mercadosfinancieros #asesorfinanciero #planificacionpatrimonial #educacionfinanciera #inversionespana #tarragona #IBEX35 #patrimonio",
+      "cta": "Desliza para entender qué está pasando y escríbeme si quieres analizar tu cartera",
+      "prioridad": "alta"
+    },
+    {
+      "id": 2,
+      "fecha": "2026-05-19",
+      "dia_semana": "Lunes",
+      "formato": "Reel",
+      "tema": "Error del empresario",
+      "hora": "12:00",
+      "categoria": "leads",
+      "caption_completo": "El error financiero más común que veo en empresarios exitosos (y cómo evitarlo) 💼\n\nTienen un negocio que funciona. Ingresos sólidos. Pero su patrimonio personal está completamente desprotegido.\n\nEn este reel te cuento el error número 1 que cometen los empresarios con su dinero — y la solución que nadie les explica claramente.\n\nSi te ves identificado, escríbeme. Tengo 15 minutos para ti esta semana.\n\n#empresarios #patrimoniofamiliar #asesorfinanciero #planificacionpatrimonial #emprendedores #bancaprivada #tarragona #finanzaspersonales #libertadfinanciera",
+      "cta": "Escríbeme si te ves identificado — tengo 15 minutos para ti esta semana",
+      "prioridad": "alta"
+    },
+    {
+      "id": 3,
+      "fecha": "2026-05-20",
+      "dia_semana": "Martes",
+      "formato": "Imagen",
+      "tema": "IBEX máximos 17755",
+      "hora": "18:00",
+      "categoria": "actualidad",
+      "caption_completo": "📊 IBEX 35 en máximos históricos: 17.755 puntos.\n\n¿Qué significa esto para tu cartera?\n\nCuando el mercado español está en máximos, la mayoría de inversores hace una de dos cosas: se emocionan y compran sin estrategia, o se asustan y venden.\n\nNinguna de las dos es la respuesta correcta.\n\nLo que realmente importa: revisar tu asignación de activos, rebalancear si es necesario, y no dejarse llevar por el ruido.\n\n¿Tienes acciones españolas en cartera? ¿Estás aprovechando este momento?\n\n#IBEX35 #bolsaespañola #mercadosfinancieros #asesorfinanciero #inversionespana #analisisfinanciero #tarragona #planificacionpatrimonial #actualidadfinanciera",
+      "cta": "¿Tienes acciones españolas? Cuéntame en comentarios o escríbeme",
+      "prioridad": "media"
+    },
+    {
+      "id": 4,
+      "fecha": "2026-05-21",
+      "dia_semana": "Miércoles",
+      "formato": "Stories",
+      "tema": "Behind the scenes",
+      "hora": "09:00",
+      "categoria": "humanizar",
+      "caption_completo": "☕ Buenos días desde Tarragona.\n\nEmpiezo la semana revisando carteras antes del café. Porque los mercados no esperan.\n\nHoy tengo 4 reuniones con clientes, análisis del BCE y preparar el plan de noviembre para una familia empresaria.\n\nAsí es el día a día de un asesor financiero independiente.\n\n¿Alguna pregunta sobre finanzas que llevas tiempo queriendo hacer? Escríbela aquí 👇\n\n#detrasdelasesor #asesorfinesp #tarragona #finanzaspersonales #diasdirecto #vidadeasesorf",
+      "cta": "Escribe tu pregunta financiera aquí",
+      "prioridad": "baja"
+    },
+    {
+      "id": 5,
+      "fecha": "2026-05-22",
+      "dia_semana": "Jueves",
+      "formato": "Carrusel",
+      "tema": "5 señales que necesitas asesor",
+      "hora": "12:00",
+      "categoria": "lead_magnet",
+      "caption_completo": "¿Necesitas un asesor financiero? Estas 5 señales te lo dicen 👇\n\nMucha gente cree que los asesores financieros son solo para ricos. Error.\n\nSon para cualquiera que quiera tomar mejores decisiones con su dinero — y evitar los errores que cuestan años de trabajo.\n\nDesliza y descubre si es tu momento de dar el paso.\n\nSi te identificas con 3 o más señales, escríbeme. Primera consulta sin compromiso.\n\n#asesorfinanciero #planificacionpatrimonial #finanzaspersonales #inversion #patrimonio #tarragona #emprendedores #autonomos #educacionfinanciera #libertadfinanciera",
+      "cta": "Primera consulta sin compromiso — escríbeme directamente",
+      "prioridad": "alta"
+    },
+    {
+      "id": 6,
+      "fecha": "2026-05-23",
+      "dia_semana": "Viernes",
+      "formato": "Reel",
+      "tema": "Bitcoin $76k caro o barato",
+      "hora": "18:00",
+      "categoria": "alcance",
+      "caption_completo": "Bitcoin a 76.000$: ¿caro o barato? La respuesta que nadie te da 🟠\n\nTodo el mundo tiene opinión sobre Bitcoin. Pocos tienen contexto.\n\nEn este reel te explico cómo analizar el precio de BTC sin dejarte llevar por el hype ni el miedo — y qué porcentaje, si alguno, tiene sentido en una cartera diversificada.\n\nOJO: no es consejo de inversión. Es educación financiera.\n\n¿Tienes cripto en cartera? Comenta abajo 👇\n\n#bitcoin #criptomonedas #btc #asesorfinanciero #educacionfinanciera #inversionespana #planificacionpatrimonial #tarragona #finanzas2026",
+      "cta": "¿Tienes cripto? Comenta tu porcentaje de cartera",
+      "prioridad": "alta"
+    },
+    {
+      "id": 7,
+      "fecha": "2026-05-24",
+      "dia_semana": "Sábado",
+      "formato": "Imagen",
+      "tema": "Encuesta 100k euros",
+      "hora": "11:00",
+      "categoria": "engagement",
+      "caption_completo": "Si tuvieras 100.000€ hoy, ¿qué harías? 💬\n\nA) Invertir en bolsa española\nB) Inmueble para alquilar\nC) Fondo de inversión diversificado\nD) Guardarlo en el banco\n\nNo hay respuesta incorrecta — pero sí hay respuestas más eficientes según tu situación, horizonte temporal y perfil de riesgo.\n\nVota en la encuesta de las stories y mañana os cuento qué dice la evidencia financiera sobre cada opción.\n\n#encuestafinanciera #inversion #patrimonio #asesorfinanciero #planificacionpatrimonial #finanzaspersonales #tarragona #decideinvierte #educacionfinanciera",
+      "cta": "Vota en las stories — mañana revelamos los resultados con análisis",
+      "prioridad": "media"
+    },
+    {
+      "id": 8,
+      "fecha": "2026-05-26",
+      "dia_semana": "Lunes",
+      "formato": "Carrusel",
+      "tema": "Respuesta encuesta",
+      "hora": "12:00",
+      "categoria": "conversion",
+      "caption_completo": "Los resultados de la encuesta del sábado (y lo que realmente dice la evidencia) 📊\n\nMás de X personas respondieron. Aquí está el análisis honesto de cada opción.\n\nDesliza para ver qué opción elige la mayoría... y por qué la evidencia financiera te puede sorprender.\n\nRecuerda: la mejor inversión depende de TU situación. No de modas ni de lo que hace el vecino.\n\n¿Quieres saber qué haría yo con tu situación específica? Escríbeme.\n\n#resultadosencuesta #inversion #asesorfinanciero #planificacionpatrimonial #finanzaspersonales #tarragona #patrimonio #educacionfinanciera #conversion",
+      "cta": "¿Quieres saber qué haría yo con tu situación? Escríbeme",
+      "prioridad": "alta"
+    },
+    {
+      "id": 9,
+      "fecha": "2026-05-27",
+      "dia_semana": "Martes",
+      "formato": "Imagen",
+      "tema": "EUR/USD 1.17 divisas",
+      "hora": "18:00",
+      "categoria": "educacion",
+      "caption_completo": "EUR/USD en 1.17: ¿qué significa para tu dinero? 💱\n\nEl euro lleva semanas fortaleciéndose frente al dólar. Para muchos esto pasa desapercibido. Para los que tienen activos en dólares o invierten en fondos globales, es relevante.\n\nUn euro más fuerte significa:\n✓ Viajes a EEUU más baratos\n✓ Menor rentabilidad de activos en USD (traducida a euros)\n✓ Oportunidad de revisar cobertura de divisa en tu cartera\n\n¿Tienes exposición a activos en dólares? Cuéntame.\n\n#eurusd #divisas #mercadosfinancieros #asesorfinanciero #planificacionpatrimonial #inversionespana #tarragona #educacionfinanciera #forex",
+      "cta": "¿Tienes activos en USD? Escríbeme para revisar tu exposición",
+      "prioridad": "media"
+    },
+    {
+      "id": 10,
+      "fecha": "2026-05-28",
+      "dia_semana": "Miércoles",
+      "formato": "Reel",
+      "tema": "Por qué dejé la banca",
+      "hora": "19:00",
+      "categoria": "confianza",
+      "caption_completo": "Por qué dejé la banca privada para ser asesor independiente (historia real) 🏦➡️🆓\n\nTenía un buen sueldo, cartera de clientes y estabilidad. Lo dejé.\n\n¿Por qué? Porque en la banca yo tenía dos jefes: el cliente... y los objetivos de venta del banco. Y eso crea un conflicto de interés que no podía ignorar.\n\nHoy trabajo solo para mis clientes. Sin productos que vender, sin presión de ventas, sin conflictos de interés.\n\nEsa es la diferencia entre asesoría bancaria e independiente. Y es importante que la conozcas.\n\n#asesorfin #asesorindependiente #bancaprivada #finanzaspersonales #tarragona #planificacionpatrimonial #confíaentuasesor #transparenciafinanciera",
+      "cta": "¿Tienes asesor bancario? Te cuento las diferencias — escríbeme",
+      "prioridad": "alta"
+    },
+    {
+      "id": 11,
+      "fecha": "2026-05-29",
+      "dia_semana": "Jueves",
+      "formato": "Carrusel",
+      "tema": "Jubilación en España",
+      "hora": "12:00",
+      "categoria": "lead_magnet",
+      "caption_completo": "La verdad sobre la jubilación en España que nadie te cuenta 📋\n\n¿Sabes cuánto cobrarás de pensión? La mayoría no lo sabe. Y cuando lo descubren, es demasiado tarde para actuar.\n\nDesliza para ver las 5 claves que tienes que entender sobre la jubilación en España en 2026 — y cómo empezar a prepararte hoy, independientemente de tu edad.\n\nLa planificación de la jubilación no es para mayores de 55. Es para cualquiera que quiera decidir cómo vivirá en el futuro.\n\n¿Tienes plan de pensiones? Cuéntame en comentarios.\n\n#jubilacion #pensiones #planificacionjubilacion #asesorfinanciero #planificacionpatrimonial #tarragona #finanzaspersonales #seguridad financiera #autonomos",
+      "cta": "¿No tienes plan de jubilación? Escríbeme — primera consulta gratis",
+      "prioridad": "alta"
+    },
+    {
+      "id": 12,
+      "fecha": "2026-05-30",
+      "dia_semana": "Viernes",
+      "formato": "Imagen",
+      "tema": "Cierre semana mercados",
+      "hora": "18:00",
+      "categoria": "comunidad",
+      "caption_completo": "📈 Cierre de semana en los mercados — resumen rápido\n\nSemana con mucho movimiento. Esto es lo que necesitas saber:\n\n• IBEX 35: datos del cierre\n• S&P 500: referencia global\n• Oro: activo refugio en contexto\n• EUR/USD: relevante para carteras mixtas\n\nLa semana que viene: foco en datos de inflación europea y reunión del BCE.\n\n¿Cómo ha ido tu semana en los mercados? Comenta abajo 👇\n\n#mercadosfinancieros #IBEX35 #cierresemana #asesorfinanciero #planificacionpatrimonial #tarragona #bolsaespañola #finanzassemana #inversionespana",
+      "cta": "¿Cómo ha ido tu semana? Comenta y te respondo",
+      "prioridad": "baja"
+    },
+    {
+      "id": 13,
+      "fecha": "2026-05-31",
+      "dia_semana": "Sábado",
+      "formato": "Carrusel",
+      "tema": "Resumen Mayo 2026",
+      "hora": "11:00",
+      "categoria": "autoridad",
+      "caption_completo": "Mayo 2026 en los mercados: todo lo que pasó y qué aprender de ello 📅\n\nFue un mes movido. Oro, IBEX, Bitcoin, BCE, divisas... Muchas noticias, mucho ruido.\n\nDesliza para el resumen de los 5 eventos clave de mayo que debes conocer — y las lecciones que aplico en la gestión de carteras de mis clientes.\n\nEl mercado siempre enseña algo. La clave es saber escuchar.\n\nGuarda este post para referencia. Y si quieres aplicar estas lecciones a tu patrimonio, ya sabes dónde encontrarme.\n\n#resumenmayo2026 #mercadosfinancieros #asesorfinanciero #planificacionpatrimonial #tarragona #lecciones inversión #finanzas2026 #educacionfinanciera #patrimonio",
+      "cta": "Guarda este post y escríbeme para aplicar estas lecciones a tu patrimonio",
+      "prioridad": "alta"
+    },
+    {
+      "id": 14,
+      "fecha": "2026-06-01",
+      "dia_semana": "Domingo",
+      "formato": "Reel",
+      "tema": "Nuevo mes CTA JUNIO",
+      "hora": "19:00",
+      "categoria": "conversion",
+      "caption_completo": "Junio empieza hoy. ¿Tienes claro adónde va tu dinero este mes? 🗓️\n\nNuevo mes, nuevas oportunidades. También nuevas excusas para seguir postergando lo que sabes que tienes que hacer con tus finanzas.\n\nEste junio tengo 3 plazas disponibles para nuevos clientes de asesoría patrimonial. Si llevas tiempo pensando en organizar tu dinero, optimizar tu cartera o planificar tu jubilación... este es tu momento.\n\nPrimer paso: una llamada de 20 minutos, sin compromiso, sin coste.\n\nEscríbeme 'JUNIO' por DM y coordinamos esta semana.\n\n#junio2026 #asesorfinanciero #planificacionpatrimonial #tarragona #nuevomes #patrimonioahora #finanzaspersonales #inversiones #libertadfinanciera #cta",
+      "cta": "Escríbeme 'JUNIO' por DM — 3 plazas disponibles este mes",
+      "prioridad": "alta"
+    }
+  ],
+  "resumen_categorias": {
+    "lead_magnet": 2,
+    "educacion": 2,
+    "alcance": 1,
+    "conversion": 2,
+    "leads": 1,
+    "actualidad": 1,
+    "humanizar": 1,
+    "engagement": 1,
+    "confianza": 1,
+    "comunidad": 1,
+    "autoridad": 1
+  },
+  "formatos": {
+    "Carrusel": 5,
+    "Reel": 4,
+    "Imagen": 4,
+    "Stories": 1
+  },
+  "horarios": {
+    "09:00": 1,
+    "11:00": 2,
+    "12:00": 4,
+    "18:00": 4,
+    "19:00": 3
+  },
+  "notas": "Plan generado para el período 18 Mayo — 1 Junio 2026. 14 posts en 13 días (sin publicación el 25 Mayo). Foco en lead_magnet y conversión para generar primeros clientes de asesoría."
+}
