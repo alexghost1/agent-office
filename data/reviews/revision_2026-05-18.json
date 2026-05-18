@@ -1,0 +1,89 @@
+{
+  "fecha": "2026-05-18",
+  "mes": "May",
+  "cumplimiento_plan": {
+    "planificado": 12,
+    "publicado": 0,
+    "esperado_hasta_hoy": 8,
+    "cumplimiento_pct": 0,
+    "status": "critico"
+  },
+  "noticias_impacto": [
+    {
+      "titulo": "El BCE mantiene tipos en 3.25%",
+      "fuente": "El Economista",
+      "coincidencias": [
+        "bce",
+        "tipos"
+      ],
+      "sugerencia": "Crear contenido sobre: El BCE mantiene tipos en 3.25%"
+    },
+    {
+      "titulo": "IBEX 35 sube un 1.2% tras anuncio de tipos del BCE",
+      "fuente": "",
+      "coincidencias": [
+        "ibex",
+        "bce",
+        "tipos"
+      ],
+      "sugerencia": "Crear contenido sobre: IBEX 35 sube un 1.2% tras anuncio de tipos del BCE"
+    },
+    {
+      "titulo": "El Ibex 35 sube impulsado por la banca",
+      "fuente": "Expansi\u00f3n",
+      "coincidencias": [
+        "ibex"
+      ],
+      "sugerencia": "Crear contenido sobre: El Ibex 35 sube impulsado por la banca"
+    }
+  ],
+  "alineacion_contenido": {
+    "status": "sin_datos",
+    "message": "No hay publicaciones para revisar"
+  },
+  "tendencias_detectadas": [
+    {
+      "tema": "Planificaci\u00f3n fiscal 2026",
+      "fuerza": "alta",
+      "formato": "carousel"
+    },
+    {
+      "tema": "Inversi\u00f3n en inteligencia artificial",
+      "fuerza": "media",
+      "formato": "reel"
+    },
+    {
+      "tema": "Carteras diversificadas en tiempos de incertidumbre",
+      "fuerza": "alta",
+      "formato": "post"
+    }
+  ],
+  "sugerencias": [
+    "\ud83d\udcf0 Crear contenido sobre: El BCE mantiene tipos en 3.25%",
+    "\ud83d\udcf0 Crear contenido sobre: IBEX 35 sube un 1.2% tras anuncio de tipos del BCE",
+    "\ud83d\udd04 Revisar hashtags y optimizar seg\u00fan engagement reciente",
+    "\ud83d\udcca Analizar competidores y detectar nuevos \u00e1ngulos"
+  ],
+  "acciones_recomendadas": [
+    {
+      "accion": "\ud83d\udcf0 Crear contenido sobre: El BCE mantiene tipos en 3.25%",
+      "prioridad": "alta",
+      "plazo": "48h"
+    },
+    {
+      "accion": "\ud83d\udcf0 Crear contenido sobre: IBEX 35 sube un 1.2% tras anuncio de tipos del BCE",
+      "prioridad": "alta",
+      "plazo": "48h"
+    },
+    {
+      "accion": "\ud83d\udd04 Revisar hashtags y optimizar seg\u00fan engagement reciente",
+      "prioridad": "baja",
+      "plazo": "2 semanas"
+    },
+    {
+      "accion": "\ud83d\udcca Analizar competidores y detectar nuevos \u00e1ngulos",
+      "prioridad": "baja",
+      "plazo": "2 semanas"
+    }
+  ]
+}

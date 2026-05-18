@@ -1,0 +1,185 @@
+{
+  "mes": "May",
+  "a\u00f1o": 2026,
+  "creado": "2026-05-18",
+  "total_posts": 12,
+  "distribucion": {
+    "actualidad": {
+      "cantidad": 5,
+      "porcentaje": 42
+    },
+    "behind_scenes": {
+      "cantidad": 2,
+      "porcentaje": 17
+    },
+    "educaci\u00f3n": {
+      "cantidad": 4,
+      "porcentaje": 33
+    },
+    "mercados": {
+      "cantidad": 1,
+      "porcentaje": 8
+    }
+  },
+  "semanas": [
+    {
+      "semana": 1,
+      "titulo": "Semana 1 \u2014 Planificaci\u00f3n patrimonial",
+      "posts": [
+        {
+          "dia": "lunes",
+          "hora": "12:00",
+          "topic": "An\u00e1lisis: Juanma Moreno apuesta por un gobierno del PP en solitario",
+          "category": "actualidad",
+          "format": "carousel",
+          "caption_preview": "\u00bfSab\u00edas que...? An\u00e1lisis: Juanma Moreno apuesta por un gobierno del PP en solitario\n\nEn un entorno donde los tipos de in"
+        },
+        {
+          "dia": "martes",
+          "hora": "18:00",
+          "topic": "An\u00e1lisis: Juanma Moreno apuesta por un gobierno del PP en solitario",
+          "category": "actualidad",
+          "format": "carousel",
+          "caption_preview": "\u00bfSab\u00edas que...? An\u00e1lisis: Juanma Moreno apuesta por un gobierno del PP en solitario\n\nEn un entorno donde los tipos de in"
+        },
+        {
+          "dia": "mi\u00e9rcoles",
+          "hora": "20:00",
+          "topic": "An\u00e1lisis: El BCE mantiene tipos en 3.25%",
+          "category": "actualidad",
+          "format": "carousel",
+          "caption_preview": "\u00bfSab\u00edas que...? An\u00e1lisis: El BCE mantiene tipos en 3.25%\n\nEn un entorno donde los tipos de inter\u00e9s y la inflaci\u00f3n marcan"
+        }
+      ]
+    },
+    {
+      "semana": 2,
+      "titulo": "Semana 2 \u2014 Mercados financieros",
+      "posts": [
+        {
+          "dia": "lunes",
+          "hora": "12:00",
+          "topic": "An\u00e1lisis: Ford producir\u00e1 en Valencia la versi\u00f3n europea del Bronco des",
+          "category": "actualidad",
+          "format": "carousel",
+          "caption_preview": "\u00bfSab\u00edas que...? An\u00e1lisis: Ford producir\u00e1 en Valencia la versi\u00f3n europea del Bronco des\n\nEn un entorno donde los tipos de"
+        },
+        {
+          "dia": "martes",
+          "hora": "18:00",
+          "topic": "An\u00e1lisis: El Ibex 35 sube impulsado por la banca",
+          "category": "actualidad",
+          "format": "carousel",
+          "caption_preview": "\u00bfSab\u00edas que...? An\u00e1lisis: El Ibex 35 sube impulsado por la banca\n\nEn un entorno donde los tipos de inter\u00e9s y la inflaci\u00f3"
+        },
+        {
+          "dia": "mi\u00e9rcoles",
+          "hora": "20:00",
+          "topic": "Planificaci\u00f3n patrimonial para emprendedores",
+          "category": "educaci\u00f3n",
+          "format": "carousel",
+          "caption_preview": "\u00bfSab\u00edas que...? Planificaci\u00f3n patrimonial para emprendedores\n\nEn un entorno donde los tipos de inter\u00e9s y la inflaci\u00f3n ma"
+        }
+      ]
+    },
+    {
+      "semana": 3,
+      "titulo": "Semana 3 \u2014 Educaci\u00f3n financiera",
+      "posts": [
+        {
+          "dia": "lunes",
+          "hora": "12:00",
+          "topic": "Claves del IBEX 35 esta semana",
+          "category": "mercados",
+          "format": "reel",
+          "caption_preview": "\u00bfSab\u00edas que...? Claves del IBEX 35 esta semana\n\nEn un entorno donde los tipos de inter\u00e9s y la inflaci\u00f3n marcan el ritmo,"
+        },
+        {
+          "dia": "martes",
+          "hora": "18:00",
+          "topic": "D\u00eda a d\u00eda de un asesor financiero",
+          "category": "behind_scenes",
+          "format": "stories",
+          "caption_preview": "\u00bfSab\u00edas que...? D\u00eda a d\u00eda de un asesor financiero\n\nEn un entorno donde los tipos de inter\u00e9s y la inflaci\u00f3n marcan el rit"
+        },
+        {
+          "dia": "mi\u00e9rcoles",
+          "hora": "20:00",
+          "topic": "Errores comunes al invertir",
+          "category": "educaci\u00f3n",
+          "format": "carousel",
+          "caption_preview": "\u00bfSab\u00edas que...? Errores comunes al invertir\n\nEn un entorno donde los tipos de inter\u00e9s y la inflaci\u00f3n marcan el ritmo, te"
+        }
+      ]
+    },
+    {
+      "semana": 4,
+      "titulo": "Semana 4 \u2014 Detr\u00e1s del asesor",
+      "posts": [
+        {
+          "dia": "lunes",
+          "hora": "12:00",
+          "topic": "Novedades fiscales 2026",
+          "category": "educaci\u00f3n",
+          "format": "post",
+          "caption_preview": "\u00bfSab\u00edas que...? Novedades fiscales 2026\n\nEn un entorno donde los tipos de inter\u00e9s y la inflaci\u00f3n marcan el ritmo, tener "
+        },
+        {
+          "dia": "martes",
+          "hora": "18:00",
+          "topic": "C\u00f3mo diversificar tu cartera en 2026",
+          "category": "educaci\u00f3n",
+          "format": "carousel",
+          "caption_preview": "\u00bfSab\u00edas que...? C\u00f3mo diversificar tu cartera en 2026\n\nEn un entorno donde los tipos de inter\u00e9s y la inflaci\u00f3n marcan el "
+        },
+        {
+          "dia": "mi\u00e9rcoles",
+          "hora": "20:00",
+          "topic": "\u00bfQu\u00e9 hace un private banker?",
+          "category": "behind_scenes",
+          "format": "reel",
+          "caption_preview": "\u00bfSab\u00edas que...? \u00bfQu\u00e9 hace un private banker?\n\nEn un entorno donde los tipos de inter\u00e9s y la inflaci\u00f3n marcan el ritmo, t"
+        }
+      ]
+    }
+  ],
+  "noticias_referencia": [
+    {
+      "titulo": "Juanma Moreno apuesta por un gobierno del PP en solitario",
+      "fuente": "Expansi\u00f3n"
+    },
+    {
+      "titulo": "Juanma Moreno apuesta por un gobierno del PP en solitario",
+      "fuente": "Expansi\u00f3n"
+    },
+    {
+      "titulo": "El BCE mantiene tipos en 3.25%",
+      "fuente": "El Economista"
+    },
+    {
+      "titulo": "Datos de mercado 2026-05-18: {'crypto': {'BTC': {'usd': 76482, 'change_24h': -1.",
+      "fuente": ""
+    },
+    {
+      "titulo": "Datos de mercado 2026-05-18: {'crypto': {'BTC': {'usd': 77221, 'change_24h': -1.",
+      "fuente": ""
+    }
+  ],
+  "efemerides": [
+    {
+      "dia": 1,
+      "evento": "D\u00eda del Trabajo \u2014 estabilidad laboral y financiera"
+    }
+  ],
+  "recomendaciones": [
+    "Incluir casos de \u00e9xito (anonimizados) para generar confianza",
+    "Publicar en horario de m\u00e1xima audiencia (18-21h)",
+    "Responder comentarios en las primeras 4 horas"
+  ],
+  "alineacion_marca": {
+    "status": "revisar",
+    "warnings": [
+      "Contenido de mercados escaso"
+    ]
+  }
+}

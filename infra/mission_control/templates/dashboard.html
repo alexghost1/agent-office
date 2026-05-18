@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mission Control — Oficina de Agentes IA</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0a0e1a;
+            color: #e0e6f0;
+            min-height: 100vh;
+        }
+        .header {
+            background: linear-gradient(135deg, #0f1629, #1a1f3a);
+            border-bottom: 1px solid #2a3050;
+            padding: 16px 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .header h1 {
+            font-size: 20px;
+            font-weight: 700;
+            background: linear-gradient(90deg, #00d4ff, #7b2ff7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .header .status-bar {
+            display: flex;
+            gap: 24px;
+            font-size: 13px;
+        }
+        .header .status-bar span {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .container { max-width: 1400px; margin: 0 auto; padding: 24px; }
+
+        .agents-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+        .agent-card {
+            background: #111827;
+            border: 1px solid #1f2937;
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.2s;
+        }
+        .agent-card:hover { border-color: #374151; transform: translateY(-2px); }
+        .agent-card .header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        .agent-card .name {
+            font-size: 18px;
+            font-weight: 700;
+            letter-spacing: 2px;
+        }
+        .badge {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        .badge.ok { background: #065f46; color: #6ee7b7; }
+        .badge.error { background: #7f1d1d; color: #fca5a5; }
+        .badge.degraded { background: #78350f; color: #fdba74; }
+        .badge.healthy { background: #065f46; color: #6ee7b7; }
+        .badge.unknown { background: #1e3a5f; color: #93c5fd; }
+        .badge.down { background: #7f1d1d; color: #fca5a5; }
+        .badge.sandbox { background: #312e81; color: #a5b4fc; }
+        .badge.prod { background: #064e3b; color: #6ee7b7; }
+        .agent-card .stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-top: 12px;
+            font-size: 13px;
+        }
+        .agent-card .stats .stat {
+            background: #0f172a;
+            padding: 6px 10px;
+            border-radius: 6px;
+        }
+        .agent-card .stats .stat .label { color: #6b7280; font-size: 11px; }
+        .agent-card .stats .stat .value { color: #e0e6f0; font-weight: 600; }
+
+        .panel {
+            background: #111827;
+            border: 1px solid #1f2937;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 24px;
+        }
+        .panel h2 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: #93c5fd;
+        }
+        .panel-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+        @media (max-width: 768px) { .panel-grid { grid-template-columns: 1fr; } }
+
+        .cmd-form { display: flex; gap: 12px; flex-wrap: wrap; }
+        .cmd-form select, .cmd-form input {
+            padding: 10px 14px;
+            background: #0f172a;
+            border: 1px solid #1f2937;
+            border-radius: 8px;
+            color: #e0e6f0;
+            font-size: 14px;
+        }
+        .cmd-form select { width: 140px; }
+        .cmd-form input { flex: 1; min-width: 200px; }
+        .cmd-form button {
+            padding: 10px 24px;
+            background: linear-gradient(135deg, #2563eb, #7b2ff7);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+        .cmd-form button:hover { opacity: 0.9; }
+        #cmd-result {
+            margin-top: 12px;
+            padding: 12px;
+            background: #0f172a;
+            border-radius: 8px;
+            font-family: 'SF Mono', 'Fira Code', monospace;
+            font-size: 13px;
+            white-space: pre-wrap;
+            max-height: 300px;
+            overflow: auto;
+            display: none;
+            border-left: 3px solid #2563eb;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 24px;
+            color: #4b5563;
+            font-size: 13px;
+            border-top: 1px solid #1f2937;
+        }
+
+        .pulse { animation: pulse 2s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+
+        .plans-list, .reviews-list { font-size: 13px; }
+        .plans-list li, .reviews-list li {
+            padding: 6px 0;
+            border-bottom: 1px solid #1f2937;
+            display: flex;
+            justify-content: space-between;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🛸 MISSION CONTROL — OFICINA DE AGENTES IA</h1>
+        <div class="status-bar">
+            <span>📊 {{ total_calls }} calls</span>
+            <span>✅ {{ success_rate }}% éxito</span>
+            <span>💰 ${{ "%.4f"|format(daily_cost) }} hoy</span>
+            <span>🕐 {{ now[:19] }}</span>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Agent Grid -->
+        <div class="agents-grid">
+            {% for a in agents %}
+            <div class="agent-card">
+                <div class="header-row">
+                    <span class="name">{{ a.name }}</span>
+                    <span class="badge {{ a.status }}">{{ a.status }}</span>
+                </div>
+                <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:8px;">
+                    <span class="badge {{ a.health }}">❤️ {{ a.health }}</span>
+                    <span class="badge sandbox">{{ a.mode }}</span>
+                </div>
+                <div class="stats">
+                    <div class="stat"><div class="label">Llamadas</div><div class="value">{{ a.calls }}</div></div>
+                    <div class="stat"><div class="label">Errores</div><div class="value">{{ a.errors }}</div></div>
+                    <div class="stat"><div class="label">Tasa éxito</div><div class="value">{{ a.success_rate }}%</div></div>
+                    <div class="stat"><div class="label">Tiempo medio</div><div class="value">{{ a.avg_time }}s</div></div>
+                </div>
+                {% if a.error_msg %}
+                <div style="margin-top:8px; padding:6px; background:#1f2937; border-radius:6px; font-size:12px; color:#fca5a5;">
+                    ⚠️ {{ a.error_msg[:60] }}
+                </div>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="panel-grid">
+            <!-- Command Panel -->
+            <div class="panel">
+                <h2>🎮 Terminal de Comandos</h2>
+                <form class="cmd-form" id="cmd-form">
+                    <select name="agent" id="cmd-agent">
+                        {% for a in agents %}
+                        <option value="{{ a.name.lower() }}">{{ a.name }}</option>
+                        {% endfor %}
+                    </select>
+                    <input type="text" name="task" id="cmd-task" placeholder="Ej: generar briefing matutino con crypto" autocomplete="off">
+                    <button type="submit">▶ Ejecutar</button>
+                </form>
+                <div id="cmd-result"></div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="panel">
+                <h2>⚡ Acciones Rápidas</h2>
+                <div style="display:flex; flex-wrap:wrap; gap:8px;">
+                    <button class="quick-btn" data-agent="atlas" data-task="generar briefing matutino con crypto">🌅 Briefing</button>
+                    <button class="quick-btn" data-agent="atlas" data-task="precio de bitcoin y ethereum">₿ Crypto</button>
+                    <button class="quick-btn" data-agent="iris" data-task="sidecar plan mensual de contenido">📅 Plan Mes</button>
+                    <button class="quick-btn" data-agent="iris" data-task="revisión quincenal de contenido día 15">🔍 Revisar</button>
+                    <button class="quick-btn" data-agent="iris" data-task="estrategia de crecimiento para redes">📈 Growth</button>
+                    <button class="quick-btn" data-agent="hermes" data-task="buscar leads cualificados">🎯 Leads</button>
+                    <button class="quick-btn" data-agent="herald" data-task="clasificar inbox de email">📬 Inbox</button>
+                    <button class="quick-btn" data-agent="forge" data-task="monitorizar logs de errores">🔧 Logs</button>
+                    <button class="quick-btn" data-agent="cortex" data-task="generar reporte diario de actividad">📊 Reporte</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Plans & Reviews -->
+        <div class="panel-grid">
+            <div class="panel">
+                <h2>📋 Planes Mensuales</h2>
+                <ul class="plans-list" id="plans-list">
+                    <li style="color:#6b7280;">Cargando...</li>
+                </ul>
+            </div>
+            <div class="panel">
+                <h2>📋 Revisiones Quincenales</h2>
+                <ul class="reviews-list" id="reviews-list">
+                    <li style="color:#6b7280;">Cargando...</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        Mission Control v1.0 · Oficina de Agentes IA · 400% Mode
+    </div>
+
+    <script>
+        const cmdForm = document.getElementById('cmd-form');
+        const cmdResult = document.getElementById('cmd-result');
+        const cmdAgent = document.getElementById('cmd-agent');
+        const cmdTask = document.getElementById('cmd-task');
+
+        cmdForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            cmdResult.style.display = 'block';
+            cmdResult.textContent = '⏳ Ejecutando...';
+            const form = new FormData();
+            form.append('agent', cmdAgent.value);
+            form.append('task', cmdTask.value);
+            try {
+                const resp = await fetch('/api/run', { method: 'POST', body: form });
+                const data = await resp.json();
+                cmdResult.textContent = JSON.stringify(data, null, 2);
+            } catch (err) {
+                cmdResult.textContent = 'Error: ' + err.message;
+            }
+        });
+
+        document.querySelectorAll('.quick-btn').forEach(btn => {
+            btn.addEventListener('click', async () => {
+                const agent = btn.dataset.agent;
+                const task = btn.dataset.task;
+                cmdAgent.value = agent;
+                cmdTask.value = task;
+                cmdResult.style.display = 'block';
+                cmdResult.textContent = '⏳ Ejecutando...';
+                const form = new FormData();
+                form.append('agent', agent);
+                form.append('task', task);
+                try {
+                    const resp = await fetch('/api/run', { method: 'POST', body: form });
+                    const data = await resp.json();
+                    cmdResult.textContent = JSON.stringify(data, null, 2);
+                } catch (err) {
+                    cmdResult.textContent = 'Error: ' + err.message;
+                }
+            });
+        });
+
+        async function loadPlans() {
+            try {
+                const resp = await fetch('/api/plans');
+                const plans = await resp.json();
+                const ul = document.getElementById('plans-list');
+                if (plans.length === 0) {
+                    ul.innerHTML = '<li style="color:#6b7280;">Sin planes aún — espera al día 1 del mes</li>';
+                } else {
+                    ul.innerHTML = plans.map(p =>
+                        `<li><span>📅 ${p.mes} (${p.total} posts, ${p.semanas} sem)</span><span style="color:#6b7280;">${p.creado}</span></li>`
+                    ).join('');
+                }
+            } catch (e) {
+                document.getElementById('plans-list').innerHTML = '<li style="color:#fca5a5;">Error cargando</li>';
+            }
+        }
+        async function loadReviews() {
+            try {
+                const resp = await fetch('/api/reviews');
+                const reviews = await resp.json();
+                const ul = document.getElementById('reviews-list');
+                if (reviews.length === 0) {
+                    ul.innerHTML = '<li style="color:#6b7280;">Sin revisiones aún — espera al día 15</li>';
+                } else {
+                    ul.innerHTML = reviews.map(r =>
+                        `<li><span>🔍 ${r.fecha} (${r.sugerencias} sugerencias)</span><span class="badge ${r.status || 'unknown'}">${r.status || 'N/A'}</span></li>`
+                    ).join('');
+                }
+            } catch (e) {
+                document.getElementById('reviews-list').innerHTML = '<li style="color:#fca5a5;">Error cargando</li>';
+            }
+        }
+        loadPlans();
+        loadReviews();
+    </script>
+</body>
+</html>
