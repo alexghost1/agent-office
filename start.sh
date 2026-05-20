@@ -24,5 +24,11 @@ sleep 8
 
 echo ""
 echo "✅ LISTO — Abre http://127.0.0.1:3333 en Safari"
-echo "   API agentes: http://127.0.0.1:8080/api/agents"
-echo "   Para detener: pkill -f 'infra.mission_control|next dev'"
+echo "   API agentes:      http://127.0.0.1:8080/api/agents"
+echo "   Sesiones:         http://127.0.0.1:8080/api/sessions"
+echo "   Tareas:           http://127.0.0.1:8080/api/tasks"
+echo "   Heartbeat:        http://127.0.0.1:8080/api/heartbeat"
+echo "   Para detener:     pkill -f 'infra.mission_control|next dev'"
+echo ""
+echo "   Orquestador:      Se inicia automáticamente con Mission Control"
+echo "   Logs:             data/logs/sessions.jsonl | data/logs/tasks.jsonl"

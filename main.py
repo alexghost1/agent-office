@@ -25,23 +25,43 @@ from rich.columns import Columns
 load_dotenv()
 console = Console()
 
-AGENT_MODULES = ["cortex", "hermes", "iris", "atlas", "herald", "forge", "nexus"]
+AGENT_MODULES = ["cortex", "hermes", "iris", "atlas", "herald", "forge", "nexus",
+                 "hunter", "copywriter", "mail_agent", "content_creator", "cmo_agent",
+                 "instagram_agent", "robin"]
+
+# Mapeo nombre_modulo → nombre_display (para agentes con guión en el nombre)
+AGENT_DISPLAY_NAMES = {
+    "mail_agent":       "mail-agent",
+    "content_creator":  "content-creator",
+    "cmo_agent":        "cmo-agent",
+    "instagram_agent":  "instagram-agent",
+}
 REFRESH_INTERVAL = 2
 DASHBOARD_ENABLED = os.getenv("DASHBOARD_ENABLED", "true").lower() == "true"
 
 
 def init_agents():
+    # Mapeo nombre_modulo → nombre_clase para agentes con nombres compuestos
+    cls_overrides = {
+        "mail_agent":       "MailAgentAgent",
+        "content_creator":  "ContentCreatorAgent",
+        "cmo_agent":        "CmoAgentAgent",
+        "instagram_agent":  "InstagramAgentAgent",
+    }
     agents = {}
     for name in AGENT_MODULES:
         try:
             module = __import__(f"agents.{name}.agent", fromlist=["*"])
-            cls_name = f"{name.capitalize()}Agent"
+            cls_name = cls_overrides.get(name, f"{name.capitalize()}Agent")
             agent_cls = getattr(module, cls_name)
             agent = agent_cls()
-            agents[name] = agent
+            # Usar nombre display (con guión) como clave pública
+            display = AGENT_DISPLAY_NAMES.get(name, name)
+            agents[display] = agent
         except Exception as e:
             logger.error(f"Error iniciando {name}: {e}")
-            agents[name] = None
+            display = AGENT_DISPLAY_NAMES.get(name, name)
+            agents[display] = None
     return agents
 
 

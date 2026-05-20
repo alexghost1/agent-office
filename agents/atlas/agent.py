@@ -198,7 +198,8 @@ class AtlasAgent:
     def _load_cortex(self):
         try:
             from agents.cortex.agent import CortexAgent
-            return CortexAgent()
+            from core.singleton import get_or_create
+            return get_or_create("cortex", CortexAgent)
         except Exception as e:
             logger.warning(f"ATLAS no pudo conectar con CORTEX: {e}")
             return None

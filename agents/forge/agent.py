@@ -54,6 +54,10 @@ class GithubTool:
             return []
 
 
+DRAFTS_DIR = Path(__file__).parent.parent.parent / "data" / "drafts"
+PENDING_DEPLOYS_FILE = DRAFTS_DIR / "pending_deploys.json"
+
+
 class ForgeAgent:
     def __init__(self):
         self.name = AGENT_NAME
@@ -64,43 +68,84 @@ class ForgeAgent:
         self.github = GithubTool()
         logger.info(f"{self.name} inicializado | sandbox={self.sandbox_mode}")
 
-    def auto_deploy(self, message: str = "") -> dict:
-        """Push all changes to GitHub automatically."""
-        import subprocess
+    def auto_deploy(self, message: str = "", require_approval: bool = True) -> dict:
+        """Git add + commit. Push only after approval (saved to pending_deploys.json)."""
+        import subprocess, json
+        from datetime import datetime
         repo_path = Path(__file__).parent.parent.parent
-        timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
-        commit_msg = f"auto: {message or 'actualizacion automatica'} [{timestamp}]"
+        DRAFTS_DIR.mkdir(parents=True, exist_ok=True)
+
         try:
             subprocess.run(["git", "add", "."], cwd=repo_path, check=True, capture_output=True)
+            commit_msg = message or f"auto: update {datetime.now().strftime('%Y-%m-%d %H:%M')}"
             result = subprocess.run(
                 ["git", "commit", "-m", commit_msg],
                 cwd=repo_path, capture_output=True, text=True
             )
-            if "nothing to commit" in result.stdout or result.returncode not in [0, 1]:
-                return {"status": "ok", "message": "Nada que subir — repositorio al día"}
+            if result.returncode != 0 and "nothing to commit" in result.stdout:
+                return {"status": "ok", "message": "Nada que commitear"}
+
+            if require_approval:
+                # Save to pending queue — don't push yet
+                pending = []
+                if PENDING_DEPLOYS_FILE.exists():
+                    try:
+                        pending = json.loads(PENDING_DEPLOYS_FILE.read_text())
+                    except Exception:
+                        pending = []
+                pending.append({
+                    "id": datetime.now().strftime("%Y%m%d_%H%M%S"),
+                    "message": commit_msg,
+                    "timestamp": datetime.now().isoformat(),
+                    "status": "pending_approval"
+                })
+                PENDING_DEPLOYS_FILE.write_text(json.dumps(pending, indent=2))
+                return {
+                    "status": "pending_approval",
+                    "message": f"Commit listo. Push pendiente de aprobación de Alexandre.",
+                    "commit": commit_msg
+                }
+            else:
+                push = subprocess.run(
+                    ["git", "push", "origin", "main"],
+                    cwd=repo_path, capture_output=True, text=True
+                )
+                if push.returncode == 0:
+                    return {"status": "ok", "message": f"Deploy completado: {commit_msg}"}
+                return {"status": "error", "message": f"Push falló: {push.stderr[:200]}"}
+        except Exception as e:
+            return {"status": "error", "message": str(e)}
+
+    def approve_deploy(self, deploy_id: str = None) -> dict:
+        """Push the latest approved commit."""
+        import subprocess, json
+        repo_path = Path(__file__).parent.parent.parent
+        try:
             push = subprocess.run(
                 ["git", "push", "origin", "main"],
-                cwd=repo_path, capture_output=True, text=True, timeout=30
+                cwd=repo_path, capture_output=True, text=True
             )
             if push.returncode == 0:
-                try:
-                    from core.memory.chroma_store import ChromaStore
-                    ChromaStore().store("strategies", f"Deploy automático: {commit_msg}",
-                                        metadata={"agent": "forge", "event_type": "deploy"})
-                except Exception:
-                    pass
-                return {"status": "ok", "message": f"✅ Deploy exitoso: {commit_msg}"}
-            else:
-                return {"status": "error", "message": f"Push falló: {push.stderr[:200]}"}
+                if PENDING_DEPLOYS_FILE.exists():
+                    pending = json.loads(PENDING_DEPLOYS_FILE.read_text())
+                    for p in pending:
+                        if deploy_id is None or p["id"] == deploy_id:
+                            p["status"] = "pushed"
+                    PENDING_DEPLOYS_FILE.write_text(json.dumps(pending, indent=2))
+                return {"status": "ok", "message": "Push completado"}
+            return {"status": "error", "message": push.stderr[:200]}
         except Exception as e:
             return {"status": "error", "message": str(e)}
 
     def run(self, task: str, context: dict = None) -> dict:
         logger.info(f"{self.name} ejecutando: {task[:80]}")
         task_lower = task.lower()
+        if any(w in task_lower for w in ["aprobar", "approve", "aprueba"]):
+            deploy_id = context.get("deploy_id") if context else None
+            return {"agent": self.name, **self.approve_deploy(deploy_id)}
         if any(w in task_lower for w in ["deploy", "push", "subir", "github", "commit"]):
             msg = context.get("message", task) if context else task
-            return {"agent": self.name, **self.auto_deploy(msg[:80])}
+            return {"agent": self.name, **self.auto_deploy(msg[:80], require_approval=True)}
         if "monitor" in task_lower or "log" in task_lower:
             logs = self.monitor_logs()
             return {"agent": self.name, "status": "ok", "logs": logs}

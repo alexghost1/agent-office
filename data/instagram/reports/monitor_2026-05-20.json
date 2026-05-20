@@ -1,0 +1,91 @@
+{
+  "fecha": "2026-05-20",
+  "tipo": "monitoreo_diario_instagram",
+  "colecciones": {
+    "competencia": {
+      "total": 30,
+      "alta_relevancia": 13,
+      "descripcion": "Asesores financieros, EAFIs, banca privada y gestoras en España. Monitorear: temas que usan, frecuencia de publicación, engagement, mensajes clave y diferenciadores.",
+      "objetivo": "Detectar gaps de contenido, posicionamiento diferencial y oportunidades que ellos no están aprovechando.",
+      "cuentas_muestra": [
+        "finect",
+        "rankia_es",
+        "indexacapital",
+        "myinvestor_es",
+        "efpa_espana"
+      ]
+    },
+    "contenido_inspiracion": {
+      "total": 30,
+      "alta_relevancia": 16,
+      "descripcion": "Creadores de contenido financiero en castellano con audiencias establecidas. Monitorear: formatos virales, temas que traccionan, hooks más usados, frecuencia y cómo generan leads.",
+      "objetivo": "Adaptar formatos de éxito al estilo SafeBrok. Detectar tendencias de contenido antes de que sean mainstream.",
+      "cuentas_muestra": [
+        "inversor_zen",
+        "antonio_rico_inversor",
+        "eu_soy_rico",
+        "garciademarina",
+        "bolsaybolsillos"
+      ]
+    },
+    "prospects_entorno_local": {
+      "total": 35,
+      "alta_relevancia": 20,
+      "descripcion": "Empresarios, inmobiliario de lujo, cámaras de comercio, asociaciones empresariales y entorno local de Tarragona y Costa Dorada. Clientes potenciales y fuentes de derivación.",
+      "objetivo": "Detectar necesidades financieras, momentos de vida (venta empresa, herencia, cambio vital), eventos de networking y oportunidades de introducción.",
+      "cuentas_muestra": [
+        "remax_tarragona",
+        "engelvoelkers_tarragona",
+        "costadorada_villas",
+        "luxurypropertytarragona",
+        "cambratarragonaofi"
+      ]
+    }
+  },
+  "total_cuentas": 100,
+  "resumen_estrategico": "DIGEST 20/05/2026\n\nCOMPETENCIA — Revisar hoy: @efpa_espana  @cnmv_es  @indexacapital\n→ Analizar temas usados, frecuencia y formato de sus últimas 3 publicaciones.\n\nINSPIRACIÓN — Cuentas a estudiar hoy: @el_asesor_digital  @gestor_patrimonios\n→ Identificar el post con más engagement de la semana y adaptar el formato.\n\nPROSPECTS — Señales locales: @notarioscat  @banca_privada_andorra  @cambratarragonaofi\n→ Buscar publicaciones sobre eventos empresariales, ventas de activos o cambios corporativos.\n\nACCIÓN DEL DÍA: Deja un comentario de valor en el post más reciente de una cuenta de competencia alta relevancia. Visibilidad orgánica ante su audiencia — que es exactamente tu audiencia objetivo.",
+  "alertas": [
+    {
+      "tipo": "estacional",
+      "mensaje": "Mayo: temporada declaración de renta — alta demanda de contenido fiscal",
+      "urgencia": "alta"
+    },
+    {
+      "tipo": "oportunidad",
+      "mensaje": "Competidores activos en contenido IRPF — diferenciarte con enfoque patrimonial",
+      "urgencia": "media"
+    },
+    {
+      "tipo": "monitoreo",
+      "mensaje": "Verificar cuentas inmobiliario lujo Tarragona — mercado activo en May",
+      "urgencia": "media"
+    }
+  ],
+  "acciones_recomendadas": [
+    {
+      "accion": "Revisar últimas 3 publicaciones de @indexacapital y @myinvestor_es",
+      "razon": "Principales competidores digitales — detectar temas que están usando",
+      "tiempo": "5 min",
+      "prioridad": "alta"
+    },
+    {
+      "accion": "Buscar en @cambratarragonaofi y @tarragona_connecta eventos próximos",
+      "razon": "Identificar eventos de networking donde presentarte como asesor",
+      "tiempo": "3 min",
+      "prioridad": "alta"
+    },
+    {
+      "accion": "Revisar el post más viral de la semana en @garciademarina o @patrimonioypropósito",
+      "razon": "Adaptar formato exitoso al estilo SafeBrok",
+      "tiempo": "5 min",
+      "prioridad": "media"
+    },
+    {
+      "accion": "Comentar con valor en una publicación de @remax_tarragona o @engelvoelkers_tarragona",
+      "razon": "Visibilidad ante clientes potenciales HNWI que siguen cuentas inmobiliarias de lujo",
+      "tiempo": "2 min",
+      "prioridad": "alta"
+    }
+  ],
+  "proxima_revision": "2026-05-20"
+}

@@ -43,7 +43,6 @@ class NexusAgent:
         self._task_queue = PriorityQueue()
         self._queue_worker = None
         self._running = False
-        self._load_agents()
         self._init_health()
         self._start_queue_worker()
         logger.info(f"{self.name} 400% | workers={MAX_WORKERS} | sandbox={self.sandbox_mode}")
@@ -58,6 +57,22 @@ class NexusAgent:
             except Exception as e:
                 logger.error(f"Error cargando {name}: {e}")
                 self.agents[name] = None
+
+    def _get_agent(self, name: str):
+        """Lazy-load agent on first use."""
+        if name not in self.agents or self.agents[name] is None:
+            try:
+                module_path = AGENTS_MAP.get(name)
+                if not module_path:
+                    return None
+                module = __import__(module_path, fromlist=["*"])
+                cls_name = f"{name.capitalize()}Agent"
+                agent_cls = getattr(module, cls_name)
+                self.agents[name] = agent_cls()
+            except Exception as e:
+                logger.error(f"Error cargando {name}: {e}")
+                self.agents[name] = None
+        return self.agents.get(name)
 
     def _init_health(self):
         try:
@@ -83,7 +98,7 @@ class NexusAgent:
         self._queue_worker.start()
 
     def get_agent(self, name: str):
-        return self.agents.get(name)
+        return self._get_agent(name)
 
     def report(self) -> dict:
         return {"agent": self.name, "status": "operational", "sandbox": self.sandbox_mode}

@@ -9,6 +9,8 @@ from loguru import logger
 
 load_dotenv(Path(__file__).parent.parent.parent / ".env")
 
+from core.tools.llm_router import LLMRouter
+
 AGENT_NAME = "cortex"
 SYSTEM_PROMPT_PATH = Path(__file__).parent / "prompts" / "system.md"
 
@@ -19,6 +21,7 @@ class CortexAgent:
         self.system_prompt = SYSTEM_PROMPT_PATH.read_text()
         self.model = os.getenv("OLLAMA_MODEL", "qwen2.5:14b")
         self.anthropic_key = os.getenv("ANTHROPIC_API_KEY")
+        self.router = LLMRouter()
         self.sandbox_mode = os.getenv("AGENT_SANDBOX_MODE", "true").lower() == "true"
         self._store = None
         logger.info(f"{self.name} inicializado | sandbox={self.sandbox_mode}")
@@ -84,12 +87,30 @@ class CortexAgent:
     def daily_report(self) -> str:
         today = datetime.date.today().isoformat()
         lines = [f"=== Reporte CORTEX — {today} ==="]
+        counts = {}
         for col_name in ["leads", "clients", "errors", "strategies", "social_content", "market_intel"]:
             try:
                 count = self.store.count(col_name)
+                counts[col_name] = count
                 lines.append(f"  {col_name}: {count} registros")
             except Exception:
+                counts[col_name] = 0
                 lines.append(f"  {col_name}: error al contar")
+        try:
+            summary_prompt = (
+                f"Genera un resumen ejecutivo de 2-3 frases del estado de la Oficina de Agentes IA "
+                f"basándote en estos datos del día {today}: {counts}. "
+                f"Resumen breve, profesional, en español."
+            )
+            summary = self.router.call(
+                summary_prompt,
+                task_description="cortex daily report summary",
+                max_tokens=200,
+            )
+            if summary:
+                lines.append(f"\nResumen: {summary.strip()}")
+        except Exception:
+            pass
         return "\n".join(lines)
 
     def store_lead(self, lead_data: dict) -> str:

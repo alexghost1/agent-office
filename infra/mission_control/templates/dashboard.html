@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mission Control — Oficina de Agentes IA</title>
+    <title>OFICINA — Panel de Control</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -171,12 +171,13 @@
 </head>
 <body>
     <div class="header">
-        <h1>🛸 MISSION CONTROL — OFICINA DE AGENTES IA</h1>
+        <h1>🏢 OFICINA — PANEL DE CONTROL</h1>
         <div class="status-bar">
             <span>📊 {{ total_calls }} calls</span>
             <span>✅ {{ success_rate }}% éxito</span>
             <span>💰 ${{ "%.4f"|format(daily_cost) }} hoy</span>
             <span>🕐 {{ now[:19] }}</span>
+            <span><a href="/sessions" style="color:#00d4ff;text-decoration:none;font-weight:600">📋 Sesiones</a></span>
         </div>
     </div>
 
@@ -259,7 +260,7 @@
     </div>
 
     <div class="footer">
-        Mission Control v1.0 · Oficina de Agentes IA · 400% Mode
+        OFICINA v1.0 · Panel de Control · SafeBrok
     </div>
 
     <script>

@@ -8,6 +8,7 @@ import json
 from pathlib import Path
 from dotenv import load_dotenv
 from loguru import logger
+from PIL import Image, ImageDraw, ImageFont
 
 load_dotenv(Path(__file__).parent.parent.parent / ".env")
 
@@ -102,14 +103,73 @@ class IrisAgent:
         self.instagram = InstagramTool()
         self.cortex = self._load_cortex()
         self.router = LLMRouter()
+        self.images_dir = Path(__file__).parent.parent.parent / "data" / "images"
+        self.images_dir.mkdir(parents=True, exist_ok=True)
         CONTENT_PLANS_DIR.mkdir(parents=True, exist_ok=True)
         REVIEWS_DIR.mkdir(parents=True, exist_ok=True)
         logger.info(f"{self.name} — Directora Redes | sandbox={self.sandbox_mode}")
 
+    def _generar_story(self, tema: str, n: int = 3) -> list[str]:
+        """Genera imágenes para Instagram Stories (1080x1920) con fondo real."""
+        rutas = []
+        textos = [f"{tema}", "Dato clave", "Reflexión"]
+        plantillas = sorted(Path(__file__).parent.parent.parent.glob("data/images/templates/bg_*.jpg"))
+        if not plantillas:
+            plantillas = [None] * n
+        for i in range(min(n, len(textos))):
+            if plantillas and i < len(plantillas) and plantillas[i] and plantillas[i].exists():
+                bg = Image.open(plantillas[i]).resize((1080, 1920))
+            else:
+                bg = Image.new("RGB", (1080, 1920), (15, 23, 42))
+            overlay = Image.new("RGBA", (1080, 1920), (0, 0, 0, 100))
+            bg.paste(overlay, (0, 0), overlay)
+            draw = ImageDraw.Draw(bg)
+            try:
+                font_t = ImageFont.truetype("/System/Library/Fonts/Helvetica.ttc", 64)
+                font_s = ImageFont.truetype("/System/Library/Fonts/Helvetica.ttc", 32)
+            except Exception:
+                font_t = ImageFont.load_default()
+                font_s = ImageFont.load_default()
+            # Barra dorada superior
+            draw.rectangle([0, 0, 1080, 8], fill=(200, 170, 80))
+            draw.text((80, 200), textos[i], fill=(255, 255, 255), font=font_t)
+            draw.text((80, 420), "ARE InvestSocial", fill=(200, 170, 80), font=font_s)
+            # Barra inferior
+            draw.rectangle([0, 1850, 1080, 1920], fill=(200, 170, 80))
+            path = self.images_dir / f"story_{i+1}.png"
+            bg.save(path)
+            rutas.append(str(path))
+            logger.info(f"📱 Story {i+1} guardada: {path}")
+        return rutas
+
+    def _generar_carrusel(self, tema: str, slides: int = 5) -> list[str]:
+        """Genera imágenes de carrusel con Pillow. Devuelve rutas de archivo."""
+        import textwrap
+        rutas = []
+        titulos = [f"{tema}", "¿Qué está pasando?", "¿Por qué importa?", "El error común", "Mi recomendación"]
+        for i in range(min(slides, len(titulos))):
+            img = Image.new("RGB", (1080, 1080), (15, 23, 42))
+            draw = ImageDraw.Draw(img)
+            try:
+                font_t = ImageFont.truetype("/System/Library/Fonts/Helvetica.ttc", 52)
+                font_s = ImageFont.truetype("/System/Library/Fonts/Helvetica.ttc", 32)
+            except Exception:
+                font_t = ImageFont.load_default()
+                font_s = ImageFont.load_default()
+            draw.text((80, 200), f"{i+1}/{slides}", fill=(200, 170, 80), font=font_s)
+            draw.text((80, 300), titulos[i], fill=(255, 255, 255), font=font_t)
+            draw.text((80, 500), "ARE InvestSocial", fill=(120, 120, 140), font=font_s)
+            path = self.images_dir / f"carrusel_{i+1}.png"
+            img.save(path)
+            rutas.append(str(path))
+            logger.info(f"🎨 Slide {i+1} guardado: {path}")
+        return rutas
+
     def _load_cortex(self):
         try:
             from agents.cortex.agent import CortexAgent
-            return CortexAgent()
+            from core.singleton import get_or_create
+            return get_or_create("cortex", CortexAgent)
         except Exception:
             logger.warning("IRIS no pudo conectar con CORTEX")
             return None
@@ -132,10 +192,44 @@ class IrisAgent:
         except Exception:
             return []
 
+    def monitorear_cuentas(self) -> dict:
+        """Genera el digest diario de las 100 cuentas vigiladas."""
+        from agents.iris.tools.instagram_watchlist import generate_daily_report, get_watchlist_summary
+        report = generate_daily_report(router=self.router)
+        summary = get_watchlist_summary()
+        logger.info("IRIS: digest de watchlist generado")
+
+        from core.tools.notifier import Notifier
+        msg = (
+            f"📱 IRIS — Monitoreo diario Instagram\n\n"
+            f"🔴 Competencia: {summary.get('competencia', {}).get('total', 0)} cuentas "
+            f"({summary.get('competencia', {}).get('alta_relevancia', 0)} alta relevancia)\n"
+            f"💡 Inspiración: {summary.get('contenido_inspiracion', {}).get('total', 0)} cuentas\n"
+            f"🎯 Prospects: {summary.get('prospects_entorno_local', {}).get('total', 0)} cuentas\n\n"
+            f"📋 Resumen:\n{report.get('resumen_estrategico', '')[:600]}\n\n"
+            f"⚡ Acciones de hoy:\n" +
+            "\n".join(f"• {a['accion']} ({a['tiempo']})" for a in report.get('acciones_recomendadas', [])[:3])
+        )
+        Notifier().send(msg, priority="normal", agent=self.name)
+        return {"agent": self.name, "status": "ok", "report": report}
+
     def run(self, task: str, context: dict = None) -> dict:
         logger.info(f"{self.name} ejecutando: {task[:80]}")
         task_lower = task.lower()
         ctx = context or {}
+
+        if any(k in task_lower for k in ["monitoreo", "vigilar", "watchlist", "cuentas instagram", "digest"]):
+            return self.monitorear_cuentas()
+        if "imagen" in task_lower or "dalle" in task_lower or "carrusel" in task_lower:
+            caption = self.create_caption(task, ctx.get("tone", "profesional"))
+            slides = ctx.get("slides", 5) or 5
+            rutas = self._generar_carrusel(task, slides)
+            return {"agent": self.name, "status": "ok", "caption": caption, "imagenes": rutas}
+        if "story" in task_lower or "historia" in task_lower:
+            caption = self.create_caption(task, "cercano")
+            n = ctx.get("stories", 3) or 3
+            rutas = self._generar_story(task, n)
+            return {"agent": self.name, "status": "ok", "caption": caption, "imagenes": rutas}
 
         if "plan mensual" in task_lower or "plan del mes" in task_lower or "sidecar" in task_lower:
             plan = self.crear_plan_mensual()
@@ -534,11 +628,11 @@ class IrisAgent:
             "#emprendedores", "#patrimonio", "#mercadofinanciero",
         ]
         fallback = (
-            f"¿Sabías que...? {topic}\n\n"
-            f"En un entorno donde los tipos de interés y la inflación marcan el ritmo, "
+            f"Los mercados se mueven. ¿Tu cartera también?\n\n"
+            f"Cada señal del mercado es una oportunidad si sabes interpretarla. "
+            f"En un entorno donde los tipos y la inflación marcan el ritmo, "
             f"tener una estrategia clara marca la diferencia.\n\n"
-            f"En Alexandre trabajamos para ayudarte a tomar las mejores decisiones "
-            f"financieras, adaptadas a tu perfil y objetivos.\n\n"
+            f"Te ayudo a tomar decisiones financieras adaptadas a tu perfil y objetivos.\n\n"
             f"¿Hablamos?\n\n"
             + " ".join(fallback_hashtags[:6])
         )

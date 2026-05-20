@@ -31,8 +31,15 @@ class LLMRouter:
         except Exception:
             return False
 
+    def _preferred_model(self) -> str:
+        """Devuelve el modelo con API key válida: Gemini > Claude > Ollama."""
+        if os.getenv("GEMINI_API_KEY"):
+            return "gemini"
+        if os.getenv("ANTHROPIC_API_KEY"):
+            return "claude"
+        return "ollama"
+
     def route(self, task: str, complexity: str = "medium") -> str:
-        # Si Ollama no está disponible, todo va a Claude
         ollama_ok = self._ollama_available()
 
         keywords_gemini = ["imagen", "visión", "foto", "gráfico", "análisis visual"]
@@ -41,13 +48,6 @@ class LLMRouter:
 
         task_lower = task.lower()
 
-        if complexity == "high":
-            return "claude"
-
-        for kw in keywords_gemini:
-            if kw in task_lower:
-                return "gemini"
-
         if ollama_ok:
             for kw in keywords_ollama:
                 if kw in task_lower:
@@ -55,12 +55,12 @@ class LLMRouter:
             if complexity == "low":
                 return "ollama"
 
-        return "claude"
+        return self._preferred_model()
 
     @retry(
         stop=stop_after_attempt(3),
         wait=wait_exponential(multiplier=1, min=2, max=10),
-        retry=retry_if_exception_type((ConnectionError, TimeoutError, Exception)),
+        retry=retry_if_exception_type((ConnectionError, TimeoutError, OSError)),
         reraise=True
     )
     def call(self, prompt: str, task_description: str = "",
@@ -68,9 +68,9 @@ class LLMRouter:
         if self._budget_exceeded():
             logger.warning("Presupuesto diario excedido — forzando Ollama")
         model = self.route(task_description or prompt)
-        if self._budget_exceeded() and model != "ollama":
-            logger.info("Presupuesto >80% — redirigiendo a Ollama")
-            model = "ollama"
+        if self._budget_exceeded() and model not in ("ollama", "gemini"):
+            logger.info("Presupuesto >80% — redirigiendo a Gemini (económico)")
+            model = "gemini"
 
         logger.info(f"LLM Router → {model} | task={task_description[:60]}")
         result = self._call_model(model, prompt, system, max_tokens)
