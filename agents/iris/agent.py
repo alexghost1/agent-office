@@ -165,6 +165,15 @@ class IrisAgent:
             logger.info(f"🎨 Slide {i+1} guardado: {path}")
         return rutas
 
+    def _compliance_check(self, content: str) -> dict:
+        """Llama al Agente Compliance antes de publicar. Nunca bloquea si falla la importación."""
+        try:
+            from agents.compliance.agent import check_before_publish
+            return check_before_publish(content, context="Post de Instagram SafeBrok — asesor financiero Tarragona")
+        except Exception as e:
+            logger.warning(f"IRIS: compliance check error ({e}) — aprobando por defecto")
+            return {"ok": True, "score": 100, "fallos": [], "correccion": "", "result": {}}
+
     def _load_cortex(self):
         try:
             from agents.cortex.agent import CortexAgent
@@ -239,8 +248,21 @@ class IrisAgent:
             return {"agent": self.name, "status": "ok", "revision": revision}
         if "post" in task_lower or "publicar" in task_lower:
             caption = self.create_caption(task, "profesional")
+            # ── COMPLIANCE CHECK antes de publicar ───────────────────────────
+            compliance = self._compliance_check(caption)
+            if not compliance["ok"]:
+                return {
+                    "agent": self.name,
+                    "status": "bloqueado_compliance",
+                    "motivo": compliance["fallos"],
+                    "correccion_sugerida": compliance["correccion"],
+                    "caption_original": caption,
+                    "compliance": compliance["result"],
+                }
+            # ────────────────────────────────────────────────────────────────
             result = self.instagram.create_post(image_url=ctx.get("image_url", ""), caption=caption)
-            return {"agent": self.name, "status": "ok", "result": result, "caption": caption}
+            return {"agent": self.name, "status": "ok", "result": result, "caption": caption,
+                    "compliance_score": compliance["score"]}
         if "idea" in task_lower or "content" in task_lower:
             ideas = self.generate_content_ideas(ctx.get("n", 5), ctx.get("topic", ""))
             return {"agent": self.name, "status": "ok", "ideas": ideas}

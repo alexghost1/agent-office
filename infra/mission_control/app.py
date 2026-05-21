@@ -42,7 +42,7 @@ _last_refresh = 0
 
 AGENT_MODULES = ["cortex", "hermes", "iris", "atlas", "herald", "forge", "nexus",
                  "hunter", "copywriter", "mail_agent", "content_creator",
-                 "cmo_agent", "instagram_agent", "robin"]
+                 "cmo_agent", "instagram_agent", "robin", "compliance"]
 
 # Nombre display (con guión) para cada módulo Python
 AGENT_DISPLAY = {
