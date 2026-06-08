@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JARVIS — HUD</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #05070d;
+            color: #e0e6f0;
+            min-height: 100vh;
+        }
+        .header {
+            background: linear-gradient(135deg, #0f1629, #1a1f3a);
+            border-bottom: 1px solid #2a3050;
+            padding: 16px 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .header h1 {
+            font-size: 20px;
+            font-weight: 700;
+            background: linear-gradient(90deg, #00d4ff, #7b2ff7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .header-links { display: flex; gap: 18px; align-items: center; font-size: 13px; }
+        .header-links a { color: #00d4ff; text-decoration: none; font-weight: 600; }
+        .header-links a:hover { color: #7b2ff7; }
+
+        .container { max-width: 1400px; margin: 0 auto; padding: 24px; }
+        .grid { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; }
+        @media (max-width: 960px) { .grid { grid-template-columns: 1fr; } }
+
+        .panel {
+            background: #0d1220;
+            border: 1px solid #1f2937;
+            border-radius: 14px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .panel h2 { font-size: 15px; font-weight: 700; margin-bottom: 14px; color: #93c5fd; letter-spacing: 0.5px; }
+
+        .badge { padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; }
+        .badge.active { background: #065f46; color: #6ee7b7; }
+        .badge.paused { background: #78350f; color: #fdba74; }
+        .badge.killswitch { background: #7f1d1d; color: #fca5a5; }
+        .badge.sandbox { background: #312e81; color: #a5b4fc; }
+        .badge.prod { background: #064e3b; color: #6ee7b7; }
+
+        /* Chat */
+        .chat-window {
+            height: 440px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            padding: 6px 4px 12px 4px;
+            margin-bottom: 14px;
+        }
+        .msg { max-width: 78%; padding: 10px 14px; border-radius: 14px; font-size: 14px; line-height: 1.45; white-space: pre-wrap; }
+        .msg.owner { align-self: flex-end; background: linear-gradient(135deg, #2563eb, #7b2ff7); color: #fff; border-bottom-right-radius: 4px; }
+        .msg.jarvis { align-self: flex-start; background: #161d2e; border: 1px solid #243049; border-bottom-left-radius: 4px; }
+        .msg .meta { display: block; font-size: 10px; opacity: 0.6; margin-top: 4px; }
+
+        .chat-form { display: flex; gap: 10px; }
+        .chat-form input {
+            flex: 1;
+            padding: 12px 16px;
+            background: #0f172a;
+            border: 1px solid #1f2937;
+            border-radius: 10px;
+            color: #e0e6f0;
+            font-size: 14px;
+        }
+        .chat-form input:focus { outline: none; border-color: #00d4ff; }
+        .chat-form button, .ctrl-btn, .task-form button {
+            padding: 12px 22px;
+            background: linear-gradient(135deg, #2563eb, #7b2ff7);
+            border: none;
+            border-radius: 10px;
+            color: #fff;
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .chat-form button:hover, .ctrl-btn:hover, .task-form button:hover { filter: brightness(1.15); }
+        .chat-form button:disabled { opacity: 0.5; cursor: wait; }
+
+        /* Control buttons */
+        .ctrl-row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 6px; }
+        .ctrl-btn.outline { background: transparent; border: 1px solid #374151; color: #e0e6f0; }
+        .ctrl-btn.warn { background: linear-gradient(135deg, #b45309, #92400e); }
+        .ctrl-btn.danger { background: linear-gradient(135deg, #dc2626, #7f1d1d); }
+        .ctrl-btn.safe { background: linear-gradient(135deg, #059669, #065f46); }
+
+        .status-row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-bottom: 10px; }
+        .status-row .label { color: #6b7280; font-size: 12px; }
+
+        ul.list { list-style: none; font-size: 13px; }
+        ul.list li {
+            padding: 8px 0;
+            border-bottom: 1px solid #1f2937;
+        }
+        ul.list li:last-child { border-bottom: none; }
+        ul.list .ts { color: #6b7280; font-size: 11px; }
+        ul.list .pill { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 10px; font-weight: 700; margin-right: 6px; }
+        .pill.pending { background: #1e3a5f; color: #93c5fd; }
+        .pill.done { background: #065f46; color: #6ee7b7; }
+        .pill.failed { background: #7f1d1d; color: #fca5a5; }
+
+        .task-form { display: flex; gap: 10px; margin-top: 12px; }
+        .task-form input {
+            flex: 1;
+            padding: 9px 12px;
+            background: #0f172a;
+            border: 1px solid #1f2937;
+            border-radius: 8px;
+            color: #e0e6f0;
+            font-size: 13px;
+        }
+        .task-form button { padding: 9px 16px; font-size: 13px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🧠 JARVIS — HUD</h1>
+        <div class="header-links">
+            <a href="/">← Oficina</a>
+            <a href="/sessions">📋 Sesiones</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="status-row">
+            <span class="label">Estado:</span>
+            <span id="status-badge" class="badge {{ 'active' if report.status == 'operational' else 'paused' }}">
+                {{ '✅ Activo' if report.status == 'operational' else '⏸ Pausado' }}
+            </span>
+            {% if report.control.killswitch %}
+            <span class="badge killswitch">⛔ KILLSWITCH</span>
+            {% endif %}
+            <span class="badge {{ 'sandbox' if report.sandbox else 'prod' }}">{{ '🛡 Sandbox' if report.sandbox else '🚀 Producción' }}</span>
+            <span class="label">· {{ report.tasks_pending }} tareas pendientes · {{ report.tasks_done }} completadas</span>
+        </div>
+
+        <div class="grid">
+            <!-- Chat -->
+            <div>
+                <div class="panel">
+                    <h2>💬 Habla con JARVIS</h2>
+                    <div class="chat-window" id="chat-window">
+                        {% for m in history %}
+                        <div class="msg {{ 'owner' if m.role == 'owner' else 'jarvis' }}">
+                            {{ m.content }}
+                            <span class="meta">{{ m.ts[:16].replace('T', ' ') }} · {{ m.channel }}</span>
+                        </div>
+                        {% else %}
+                        <div class="msg jarvis">Hola {{ owner_name }}. Soy JARVIS — escríbeme algo y empezamos.</div>
+                        {% endfor %}
+                    </div>
+                    <form class="chat-form" id="chat-form">
+                        <input type="text" id="chat-input" placeholder="Escribe a JARVIS..." autocomplete="off">
+                        <button type="submit" id="chat-send">Enviar</button>
+                    </form>
+                </div>
+
+                <div class="panel">
+                    <h2>🎛 Control remoto</h2>
+                    <div class="ctrl-row">
+                        <button class="ctrl-btn safe" data-action="resume">▶ Reanudar</button>
+                        <button class="ctrl-btn warn" data-action="pause">⏸ Pausar</button>
+                        <button class="ctrl-btn danger" data-action="killswitch_on">⛔ Kill switch ON</button>
+                        <button class="ctrl-btn outline" data-action="killswitch_off">✅ Kill switch OFF</button>
+                    </div>
+                    <div id="ctrl-result" style="margin-top:10px; font-size:12px; color:#6b7280;"></div>
+                </div>
+            </div>
+
+            <!-- Side panels -->
+            <div>
+                <div class="panel">
+                    <h2>📝 Tareas autónomas</h2>
+                    <ul class="list" id="tasks-list">
+                        {% for t in tasks %}
+                        <li><span class="pill {{ t.status }}">{{ t.status }}</span>{{ t.description }}<br><span class="ts">{{ t.created[:16].replace('T',' ') }} · {{ t.id }}</span></li>
+                        {% else %}
+                        <li style="color:#6b7280;">Sin tareas registradas todavía.</li>
+                        {% endfor %}
+                    </ul>
+                    <form class="task-form" id="task-form">
+                        <input type="text" id="task-input" placeholder="Añadir tarea para JARVIS..." autocomplete="off">
+                        <button type="submit">+ Añadir</button>
+                    </form>
+                </div>
+
+                <div class="panel">
+                    <h2>🧩 Ciclos de pensamiento recientes</h2>
+                    <ul class="list" id="thoughts-list">
+                        {% for t in thoughts %}
+                        <li><span class="pill pending">{{ t.kind }}</span>{{ t.content[:160] }}<br><span class="ts">{{ t.ts[:16].replace('T',' ') }}</span></li>
+                        {% else %}
+                        <li style="color:#6b7280;">Aún no hay ciclos registrados.</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const chatWindow = document.getElementById('chat-window');
+        const chatForm   = document.getElementById('chat-form');
+        const chatInput  = document.getElementById('chat-input');
+        const chatSend   = document.getElementById('chat-send');
+
+        function appendMsg(role, content, meta) {
+            const div = document.createElement('div');
+            div.className = 'msg ' + (role === 'owner' ? 'owner' : 'jarvis');
+            div.innerHTML = content.replace(/</g, '&lt;') + '<span class="meta">' + (meta || '') + '</span>';
+            chatWindow.appendChild(div);
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+        }
+
+        chatForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const text = chatInput.value.trim();
+            if (!text) return;
+            appendMsg('owner', text, 'ahora · hud');
+            chatInput.value = '';
+            chatSend.disabled = true;
+            try {
+                const resp = await fetch('/api/jarvis/chat', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                    body: 'message=' + encodeURIComponent(text)
+                });
+                const data = await resp.json();
+                appendMsg('jarvis', data.reply || '...', 'ahora' + (data.delegated_to ? ' · vía ' + data.delegated_to.toUpperCase() : ''));
+            } catch (err) {
+                appendMsg('jarvis', '⚠️ No pude conectar con JARVIS: ' + err);
+            } finally {
+                chatSend.disabled = false;
+            }
+        });
+        chatWindow.scrollTop = chatWindow.scrollHeight;
+
+        // Control buttons
+        document.querySelectorAll('.ctrl-btn').forEach(btn => {
+            btn.addEventListener('click', async () => {
+                const action = btn.dataset.action;
+                let reason = '';
+                if (action === 'pause') {
+                    reason = prompt('Motivo de la pausa (opcional):') || '';
+                }
+                const resp = await fetch('/api/jarvis/control', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                    body: 'action=' + encodeURIComponent(action) + '&reason=' + encodeURIComponent(reason)
+                });
+                const data = await resp.json();
+                document.getElementById('ctrl-result').textContent = JSON.stringify(data);
+                setTimeout(() => location.reload(), 600);
+            });
+        });
+
+        // Add task
+        document.getElementById('task-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const input = document.getElementById('task-input');
+            const text = input.value.trim();
+            if (!text) return;
+            await fetch('/api/jarvis/task', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                body: 'description=' + encodeURIComponent(text)
+            });
+            input.value = '';
+            location.reload();
+        });
+    </script>
+</body>
+</html>

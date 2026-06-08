@@ -4,4 +4,7 @@ __pycache__/
 *.pyc
 data/vectors/
 data/logs/
+data/jarvis/mind_log.json
+data/jarvis/autonomous_tasks.json
+data/jarvis/chat_history.jsonl
 .DS_Store
