@@ -14,6 +14,28 @@ Sistema multi-agente autónomo para gestión de leads, Instagram, email y mercad
 | HERALD | Email & Comms | 🔧 En desarrollo |
 | FORGE  | Código & Infra | 🔧 En desarrollo |
 
+## JARVIS — asistente personal
+
+JARVIS es el asistente personal de Alexandre dentro de este dispositivo: tiene su
+propio cerebro (memoria, ciclos de pensamiento, tareas autónomas), un puente directo
+con los 7 agentes de la Oficina y control remoto vía Telegram.
+
+- **Agente**: `agents/jarvis/agent.py` (`JarvisAgent`) — chat, delegación, memoria, kill switch
+- **HUD web**: `http://localhost:8080/jarvis` (parte de Mission Control, ver abajo)
+- **Telegram**: `python -m agents.jarvis.telegram_bot` — `/status /pause /resume /killswitch /oficina /tareas`
+- **Memoria**: `data/jarvis/` — `control.json`, `mind_log.json`, `autonomous_tasks.json`, `chat_history.jsonl`
+
+Variables de entorno relevantes: `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID`, `OWNER_NAME`.
+
+## Mission Control (HUD web)
+
+```bash
+python -m infra.mission_control.app
+# → http://localhost:8080            Panel de la Oficina
+# → http://localhost:8080/jarvis     HUD de JARVIS (chat + control remoto)
+# → http://localhost:8080/sessions   Historial de sesiones
+```
+
 ## Inicio rápido
 
 ```bash
