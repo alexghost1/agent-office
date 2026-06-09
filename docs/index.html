@@ -2,325 +2,340 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="JARVIS">
+<meta name="theme-color" content="#05070d">
+<link rel="manifest" href="manifest.json">
 <title>JARVIS</title>
 <style>
-  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
-  :root {
-    --bg:       #05070d;
-    --surface:  #0d1220;
-    --border:   #1f2937;
-    --accent:   #00d4ff;
-    --purple:   #7b2ff7;
-    --text:     #e0e6f0;
-    --muted:    #6b7280;
-    --red:      #f87171;
-    --green:    #6ee7b7;
-  }
-  html,body { height:100%; background:var(--bg); color:var(--text); font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; overflow:hidden; }
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; user-select:none; }
+html, body {
+  height:100%; width:100%;
+  background:#05070d;
+  color:#e0e6f0;
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  overflow:hidden;
+  position:fixed;
+}
 
-  /* ── Setup modal ─────────────────────────────────────────── */
-  #setup {
-    position:fixed; inset:0; background:rgba(5,7,13,.95);
-    display:flex; flex-direction:column; align-items:center; justify-content:center;
-    padding:32px; z-index:100; gap:18px;
-  }
-  #setup h2 { font-size:22px; font-weight:800; background:linear-gradient(90deg,var(--accent),var(--purple)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
-  #setup p  { font-size:14px; color:var(--muted); text-align:center; max-width:340px; line-height:1.6; }
-  #setup input {
-    width:100%; max-width:360px; padding:14px 16px;
-    background:var(--surface); border:1px solid var(--border);
-    border-radius:12px; color:var(--text); font-size:15px;
-    letter-spacing:1px;
-  }
-  #setup input:focus { outline:none; border-color:var(--accent); }
-  #btn-setup {
-    width:100%; max-width:360px; padding:16px;
-    background:linear-gradient(135deg,#2563eb,var(--purple));
-    border:none; border-radius:12px; color:#fff;
-    font-size:16px; font-weight:700; cursor:pointer;
-  }
-  #setup-err { font-size:12px; color:var(--red); min-height:16px; }
+/* ── SETUP ─────────────────────────────────────────── */
+#setup {
+  position:fixed; inset:0;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  padding:40px 32px; gap:20px; background:#05070d; z-index:99;
+}
+#setup .logo { font-size:56px; line-height:1; }
+#setup h1 {
+  font-size:28px; font-weight:900; letter-spacing:4px;
+  background:linear-gradient(90deg,#00d4ff,#7b2ff7);
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+}
+#setup p { font-size:14px; color:#6b7280; text-align:center; line-height:1.7; max-width:300px; }
+#key-input {
+  width:100%; padding:16px; border-radius:14px;
+  background:#0d1220; border:1px solid #1f2937;
+  color:#e0e6f0; font-size:15px; text-align:center; letter-spacing:1px;
+}
+#key-input:focus { outline:none; border-color:#00d4ff; }
+#btn-go {
+  width:100%; padding:18px; border-radius:14px;
+  background:linear-gradient(135deg,#2563eb,#7b2ff7);
+  border:none; color:#fff; font-size:17px; font-weight:800;
+  cursor:pointer; letter-spacing:1px;
+}
+#setup-err { font-size:12px; color:#f87171; min-height:14px; }
 
-  /* ── Main layout ─────────────────────────────────────────── */
-  #app { height:100%; display:flex; flex-direction:column; }
+/* ── MAIN APP ──────────────────────────────────────── */
+#app {
+  display:none; height:100%;
+  flex-direction:column; align-items:center; justify-content:space-between;
+  padding: env(safe-area-inset-top, 16px) 24px env(safe-area-inset-bottom, 24px);
+}
 
-  /* Header */
-  .hdr {
-    padding:14px 20px; display:flex; align-items:center; justify-content:space-between;
-    background:linear-gradient(135deg,#0f1629,#1a1f3a);
-    border-bottom:1px solid var(--border); flex-shrink:0;
-  }
-  .hdr-title { font-size:18px; font-weight:800; background:linear-gradient(90deg,var(--accent),var(--purple)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
-  .hdr-btns  { display:flex; gap:10px; }
-  .hdr-btn   { background:none; border:none; color:var(--muted); font-size:20px; cursor:pointer; padding:4px; }
-  .hdr-btn.on{ color:var(--accent); }
+/* Top bar */
+.topbar {
+  width:100%; display:flex; align-items:center; justify-content:space-between;
+  padding-top:8px;
+}
+.topbar-title {
+  font-size:15px; font-weight:800; letter-spacing:3px;
+  background:linear-gradient(90deg,#00d4ff,#7b2ff7);
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+}
+.topbar-btns { display:flex; gap:14px; }
+.icon-btn { background:none; border:none; font-size:22px; cursor:pointer; opacity:.6; padding:4px; }
+.icon-btn.on { opacity:1; }
 
-  /* Chat */
-  #chat {
-    flex:1; overflow-y:auto; padding:16px; display:flex;
-    flex-direction:column; gap:12px;
-    -webkit-overflow-scrolling:touch;
-  }
-  .msg { max-width:82%; padding:11px 15px; border-radius:16px; font-size:15px; line-height:1.5; word-break:break-word; }
-  .msg.me  { align-self:flex-end; background:linear-gradient(135deg,#2563eb,var(--purple)); color:#fff; border-bottom-right-radius:4px; }
-  .msg.bot { align-self:flex-start; background:var(--surface); border:1px solid var(--border); border-bottom-left-radius:4px; }
-  .msg .ts  { display:block; font-size:10px; opacity:.5; margin-top:5px; }
-  .msg.thinking { opacity:.55; font-style:italic; }
+/* Status text */
+#status-text {
+  font-size:15px; color:#6b7280; text-align:center;
+  min-height:24px; transition:all .3s; padding:0 20px; line-height:1.5;
+  max-width:320px;
+}
+#status-text.speaking { color:#00d4ff; }
+#status-text.listening { color:#f87171; }
 
-  /* Orb mic */
-  #orb-wrap { flex-shrink:0; display:flex; flex-direction:column; align-items:center; padding:20px 20px 28px; gap:12px; background:var(--bg); border-top:1px solid var(--border); }
-  #orb {
-    width:72px; height:72px; border-radius:50%;
-    background:linear-gradient(135deg,#1a2240,#0d1220);
-    border:2px solid var(--border);
-    display:flex; align-items:center; justify-content:center;
-    font-size:30px; cursor:pointer;
-    transition:all .2s; user-select:none;
-    position:relative;
-  }
-  #orb::before {
-    content:''; position:absolute; inset:-6px; border-radius:50%;
-    border:2px solid transparent; transition:all .3s;
-  }
-  #orb.listening {
-    background:linear-gradient(135deg,#1a0808,#200a0a);
-    border-color:var(--red);
-    animation:orb-pulse 1s infinite;
-  }
-  #orb.listening::before { border-color:rgba(248,113,113,.3); animation:ring-pulse 1s infinite; }
-  #orb.speaking {
-    background:linear-gradient(135deg,#0a1a2a,#081620);
-    border-color:var(--accent);
-  }
-  #orb.speaking::before { border-color:rgba(0,212,255,.3); animation:ring-pulse 1.5s infinite; }
-  @keyframes orb-pulse  { 0%,100%{box-shadow:0 0 0 0 rgba(248,113,113,.4)} 50%{box-shadow:0 0 0 14px rgba(248,113,113,0)} }
-  @keyframes ring-pulse { 0%{transform:scale(1);opacity:.7} 100%{transform:scale(1.5);opacity:0} }
+/* The orb */
+#orb-zone { display:flex; flex-direction:column; align-items:center; gap:20px; }
+#orb {
+  width:160px; height:160px; border-radius:50%;
+  background:radial-gradient(circle at 35% 35%, #1a2a50, #05070d);
+  border:2px solid #1f2937;
+  display:flex; align-items:center; justify-content:center;
+  font-size:60px;
+  cursor:pointer; position:relative;
+  transition:all .3s;
+  box-shadow: 0 0 40px rgba(0,212,255,.05);
+}
+#orb::after {
+  content:'';
+  position:absolute; inset:-12px; border-radius:50%;
+  border:1.5px solid rgba(0,212,255,.12);
+  transition:all .3s;
+}
+#orb::before {
+  content:'';
+  position:absolute; inset:-24px; border-radius:50%;
+  border:1px solid rgba(0,212,255,.06);
+  transition:all .3s;
+}
+#orb.idle:hover { box-shadow:0 0 50px rgba(0,212,255,.12); }
 
-  #orb-hint { font-size:12px; color:var(--muted); letter-spacing:.3px; }
+#orb.listening {
+  background:radial-gradient(circle at 35% 35%, #2a0a0a, #1a0505);
+  border-color:#f87171;
+  box-shadow:0 0 0 0 rgba(248,113,113,.5);
+  animation:listen-pulse 1.1s ease-in-out infinite;
+}
+#orb.listening::after  { border-color:rgba(248,113,113,.3); animation:ring1 1.1s ease-out infinite; }
+#orb.listening::before { border-color:rgba(248,113,113,.15); animation:ring2 1.1s ease-out infinite .2s; }
 
-  /* Text input row (optional fallback) */
-  #text-row { display:flex; gap:8px; width:100%; max-width:480px; }
-  #text-in {
-    flex:1; padding:11px 14px; background:var(--surface);
-    border:1px solid var(--border); border-radius:10px;
-    color:var(--text); font-size:14px;
-  }
-  #text-in:focus { outline:none; border-color:var(--accent); }
-  #btn-send {
-    padding:11px 18px;
-    background:linear-gradient(135deg,#2563eb,var(--purple));
-    border:none; border-radius:10px; color:#fff;
-    font-weight:700; cursor:pointer; font-size:14px;
-  }
+#orb.speaking {
+  background:radial-gradient(circle at 35% 35%, #0a1a30, #051020);
+  border-color:#00d4ff;
+  box-shadow:0 0 0 0 rgba(0,212,255,.4);
+  animation:speak-pulse 1.4s ease-in-out infinite;
+}
+#orb.speaking::after  { border-color:rgba(0,212,255,.3); animation:ring1 1.4s ease-out infinite; }
+#orb.speaking::before { border-color:rgba(0,212,255,.15); animation:ring2 1.4s ease-out infinite .3s; }
 
-  /* No-speech warning */
-  #no-speech { display:none; font-size:12px; color:var(--red); text-align:center; }
+@keyframes listen-pulse { 0%,100%{box-shadow:0 0 0 0 rgba(248,113,113,.5)} 50%{box-shadow:0 0 0 20px rgba(248,113,113,0)} }
+@keyframes speak-pulse  { 0%,100%{box-shadow:0 0 0 0 rgba(0,212,255,.4)}   50%{box-shadow:0 0 0 20px rgba(0,212,255,0)}   }
+@keyframes ring1 { 0%{transform:scale(1);opacity:.7} 100%{transform:scale(1.35);opacity:0} }
+@keyframes ring2 { 0%{transform:scale(1);opacity:.5} 100%{transform:scale(1.6); opacity:0} }
+
+#orb-label { font-size:13px; color:#4b5563; letter-spacing:.5px; }
+
+/* Last reply bubble */
+#reply-bubble {
+  background:#0d1220; border:1px solid #1f2937; border-radius:16px;
+  padding:14px 18px; font-size:15px; line-height:1.6;
+  max-width:340px; width:100%; text-align:center;
+  min-height:54px; display:flex; align-items:center; justify-content:center;
+  color:#94a3b8; transition:all .3s;
+}
+#reply-bubble.active { color:#e0e6f0; border-color:#1e3a5f; }
+
+/* Text fallback */
+#text-zone { display:flex; gap:8px; width:100%; max-width:360px; }
+#text-in {
+  flex:1; padding:13px 16px; border-radius:12px;
+  background:#0d1220; border:1px solid #1f2937;
+  color:#e0e6f0; font-size:15px;
+}
+#text-in:focus { outline:none; border-color:#00d4ff; }
+#btn-send {
+  padding:13px 20px; border-radius:12px;
+  background:linear-gradient(135deg,#2563eb,#7b2ff7);
+  border:none; color:#fff; font-weight:700; font-size:16px; cursor:pointer;
+}
+#no-speech { font-size:12px; color:#f87171; display:none; text-align:center; }
 </style>
 </head>
 <body>
 
-<!-- Setup modal -->
+<!-- SETUP -->
 <div id="setup">
-  <h2>🧠 JARVIS</h2>
-  <p>Introduce tu <strong>Anthropic API Key</strong> para activar a JARVIS.<br>Se guarda solo en este dispositivo — nunca se envía a ningún servidor.</p>
-  <input type="password" id="api-key-input" placeholder="sk-ant-api03-..." autocomplete="off" spellcheck="false">
+  <div class="logo">🧠</div>
+  <h1>JARVIS</h1>
+  <p>Introduce tu Anthropic API Key para activar a JARVIS. Se guarda solo en este dispositivo.</p>
+  <input type="password" id="key-input" placeholder="sk-ant-api03-..." autocomplete="off" inputmode="text">
   <div id="setup-err"></div>
-  <button id="btn-setup">Activar JARVIS</button>
+  <button id="btn-go">Activar</button>
 </div>
 
-<!-- Main app -->
-<div id="app" style="display:none">
-  <div class="hdr">
-    <span class="hdr-title">🧠 JARVIS</span>
-    <div class="hdr-btns">
-      <button class="hdr-btn on"  id="btn-spk" title="Voz de JARVIS">🔊</button>
-      <button class="hdr-btn"     id="btn-key" title="Cambiar API key">🔑</button>
+<!-- APP -->
+<div id="app">
+  <div class="topbar">
+    <span class="topbar-title">JARVIS</span>
+    <div class="topbar-btns">
+      <button class="icon-btn on" id="btn-spk" title="Voz">🔊</button>
+      <button class="icon-btn"    id="btn-key" title="Key">🔑</button>
     </div>
   </div>
 
-  <div id="chat"></div>
+  <div id="status-text">Pulsa el orbe y habla</div>
 
-  <div id="orb-wrap">
-    <div id="no-speech">Tu navegador no soporta reconocimiento de voz. Usa el texto.</div>
-    <div id="orb" title="Pulsa para hablar">🎤</div>
-    <div id="orb-hint">Pulsa para hablar</div>
-    <div id="text-row">
-      <input type="text" id="text-in" placeholder="O escribe aquí..." autocomplete="off">
-      <button id="btn-send">→</button>
-    </div>
+  <div id="orb-zone">
+    <div id="orb" class="idle">🎤</div>
+    <div id="orb-label">toca para hablar</div>
+    <div id="no-speech">Usa el texto — tu navegador no soporta voz</div>
+  </div>
+
+  <div id="reply-bubble">Las respuestas de JARVIS aparecerán aquí</div>
+
+  <div id="text-zone">
+    <input type="text" id="text-in" placeholder="Escribe si prefieres..." autocomplete="off">
+    <button id="btn-send">→</button>
   </div>
 </div>
 
 <script>
-const SYSTEM = `Eres JARVIS, el asistente personal de Alexandre García. Eres directo, eficiente y cercano. Hablas siempre en español. Cuando Alexandre te hace una pregunta o te da una instrucción, respondes de forma concisa y útil. Si algo no está en tu contexto, lo dices claramente sin inventar. Eres su brazo derecho digital — proactivo cuando tiene sentido y respetuoso de su tiempo.`;
+if ('serviceWorker' in navigator)
+  navigator.serviceWorker.register('./sw.js').catch(() => {});
+
+const SYSTEM = `Eres JARVIS, el asistente personal de Alexandre García. Eres directo, eficiente y cercano. Hablas siempre en español. Responde de forma breve y oral — tus respuestas se leen en voz alta, así que evita listas con viñetas, asteriscos o texto largo. Máximo 3 frases salvo que Alexandre pida más detalle. Eres su brazo derecho digital.`;
 
 let apiKey = localStorage.getItem('jarvis_key') || '';
-let ttsOn  = true;
+let ttsOn = true;
 let isListening = false;
-let history = JSON.parse(localStorage.getItem('jarvis_history') || '[]');
+let history = JSON.parse(localStorage.getItem('jarvis_hist') || '[]');
 
 const $ = id => document.getElementById(id);
+const orb = $('orb');
 
-// ── Setup ────────────────────────────────────────────────────
-function showApp() {
+// ── Setup ────────────────────────────────────────────
+function launch() {
   $('setup').style.display = 'none';
   $('app').style.display   = 'flex';
-  renderHistory();
-  if (!$('SpeechRecognition' in window || 'webkitSpeechRecognition' in window ? 'orb' : 'no-speech')) {
-    $('no-speech').style.display = 'block';
-    $('orb').style.opacity = '.3';
-    $('orb').style.pointerEvents = 'none';
-  }
-  addMsg('bot', 'Hola Alexandre. Soy JARVIS — pulsa el micrófono y háblame.', false);
 }
-
-$('btn-setup').addEventListener('click', () => {
-  const k = $('api-key-input').value.trim();
-  if (!k.startsWith('sk-ant-')) { $('setup-err').textContent = 'La key debe empezar por sk-ant-…'; return; }
-  apiKey = k;
-  localStorage.setItem('jarvis_key', k);
-  showApp();
+$('btn-go').addEventListener('click', () => {
+  const k = $('key-input').value.trim();
+  if (!k.startsWith('sk-ant-')) { $('setup-err').textContent = 'Debe empezar por sk-ant-…'; return; }
+  apiKey = k; localStorage.setItem('jarvis_key', k); launch();
 });
-$('api-key-input').addEventListener('keydown', e => { if (e.key === 'Enter') $('btn-setup').click(); });
+$('key-input').addEventListener('keydown', e => { if(e.key==='Enter') $('btn-go').click(); });
 $('btn-key').addEventListener('click', () => {
   localStorage.removeItem('jarvis_key');
-  $('api-key-input').value = '';
-  $('setup-err').textContent = '';
-  $('setup').style.display  = 'flex';
-  $('app').style.display    = 'none';
+  $('setup').style.display = 'flex'; $('app').style.display = 'none';
+  $('key-input').value = ''; $('setup-err').textContent = '';
 });
+if (apiKey) launch();
 
-if (apiKey) showApp();
-
-// ── Chat history ─────────────────────────────────────────────
-function saveHistory() { localStorage.setItem('jarvis_history', JSON.stringify(history.slice(-60))); }
-function renderHistory() {
-  const chat = $('chat'); chat.innerHTML = '';
-  history.forEach(m => appendBubble(m.role === 'user' ? 'me' : 'bot', m.content, false));
+// ── State helpers ────────────────────────────────────
+function setStatus(msg, cls) {
+  const s = $('status-text');
+  s.textContent = msg; s.className = cls || '';
 }
-function appendBubble(side, text, scroll = true) {
-  const chat = $('chat');
-  const div  = document.createElement('div');
-  div.className = 'msg ' + side;
-  div.innerHTML = text.replace(/</g,'&lt;').replace(/\n/g,'<br>') +
-    '<span class="ts">' + new Date().toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'}) + '</span>';
-  chat.appendChild(div);
-  if (scroll) chat.scrollTop = chat.scrollHeight;
-  return div;
+function setReply(text) {
+  const r = $('reply-bubble');
+  r.textContent = text; r.className = text ? 'active' : '';
 }
-function addMsg(side, text, save = true) {
-  appendBubble(side, text);
-  if (save) { history.push({role: side === 'me' ? 'user' : 'assistant', content: text}); saveHistory(); }
-}
+function saveHist() { localStorage.setItem('jarvis_hist', JSON.stringify(history.slice(-40))); }
 
-// ── Claude API call ──────────────────────────────────────────
-async function askJarvis(text) {
-  history.push({role:'user', content: text});
-  saveHistory();
-  appendBubble('me', text);
-
-  const thinking = document.createElement('div');
-  thinking.className = 'msg bot thinking'; thinking.textContent = '…';
-  $('chat').appendChild(thinking); $('chat').scrollTop = $('chat').scrollHeight;
-
+// ── Claude API ───────────────────────────────────────
+async function ask(text) {
+  history.push({role:'user', content: text}); saveHist();
+  setStatus('Pensando…');
+  orb.className = '';
   try {
     const resp = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: {
-        'Content-Type':                      'application/json',
-        'x-api-key':                          apiKey,
-        'anthropic-version':                  '2023-06-01',
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
         'anthropic-dangerous-direct-browser-access': 'true',
       },
       body: JSON.stringify({
-        model:      'claude-haiku-4-5-20251001',
-        max_tokens: 1024,
-        system:     SYSTEM,
-        messages:   history,
+        model: 'claude-haiku-4-5-20251001',
+        max_tokens: 512,
+        system: SYSTEM,
+        messages: history,
       }),
     });
     const data = await resp.json();
-    thinking.remove();
-    if (data.error) throw new Error(data.error.message || JSON.stringify(data.error));
-    const reply = data.content?.[0]?.text || '(sin respuesta)';
-    history.push({role:'assistant', content: reply});
-    saveHistory();
-    appendBubble('bot', reply);
-    if (ttsOn) speak(reply);
-  } catch (err) {
-    thinking.remove();
-    appendBubble('bot', '⚠️ Error: ' + err.message);
+    if (data.error) throw new Error(data.error.message);
+    const reply = data.content?.[0]?.text || '…';
+    history.push({role:'assistant', content: reply}); saveHist();
+    setReply(reply);
+    if (ttsOn) speak(reply); else setStatus('Pulsa el orbe y habla');
+  } catch(err) {
+    setStatus('⚠️ ' + err.message); orb.className = 'idle';
   }
 }
 
-// ── TTS ──────────────────────────────────────────────────────
+// ── TTS ──────────────────────────────────────────────
 function speak(text) {
-  if (!ttsOn || !window.speechSynthesis) return;
+  if (!window.speechSynthesis) return;
   window.speechSynthesis.cancel();
-  const utt = new SpeechSynthesisUtterance(text.replace(/[*#_~`]/g,''));
-  utt.lang = 'es-ES'; utt.rate = 1.05; utt.pitch = 0.9;
-  const voices = window.speechSynthesis.getVoices();
-  const v = voices.find(v=>v.lang.startsWith('es')&&v.localService) || voices.find(v=>v.lang.startsWith('es'));
+  const utt = new SpeechSynthesisUtterance(text.replace(/[*#_~`•]/g,''));
+  utt.lang = 'es-ES'; utt.rate = 1.0; utt.pitch = 0.85;
+  const vv = window.speechSynthesis.getVoices();
+  const v  = vv.find(v=>v.lang.startsWith('es')&&v.localService) || vv.find(v=>v.lang.startsWith('es'));
   if (v) utt.voice = v;
-  $('orb').classList.add('speaking');
-  utt.onend = utt.onerror = () => $('orb').classList.remove('speaking');
+  utt.onstart = () => { orb.className = 'speaking'; setStatus('JARVIS está hablando…', 'speaking'); };
+  utt.onend   = () => { orb.className = 'idle'; setStatus('Pulsa el orbe y habla'); };
+  utt.onerror = () => { orb.className = 'idle'; setStatus('Pulsa el orbe y habla'); };
   window.speechSynthesis.speak(utt);
 }
 $('btn-spk').addEventListener('click', () => {
   ttsOn = !ttsOn;
   $('btn-spk').classList.toggle('on', ttsOn);
   $('btn-spk').textContent = ttsOn ? '🔊' : '🔇';
-  if (!ttsOn) window.speechSynthesis.cancel();
+  if (!ttsOn) { window.speechSynthesis.cancel(); orb.className = 'idle'; setStatus('Voz desactivada'); }
 });
-if (window.speechSynthesis?.onvoiceschanged !== undefined) {
+if (window.speechSynthesis?.onvoiceschanged !== undefined)
   window.speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices();
-}
 
-// ── STT ──────────────────────────────────────────────────────
+// ── STT ──────────────────────────────────────────────
 const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
 let rec = null;
-if (SR) {
+if (!SR) {
+  $('no-speech').style.display = 'block';
+  orb.style.opacity = '.35'; orb.style.cursor = 'default';
+} else {
   rec = new SR();
-  rec.lang = 'es-ES'; rec.interimResults = true; rec.maxAlternatives = 1;
+  rec.lang = 'es-ES'; rec.interimResults = true; rec.continuous = false;
 
   rec.onstart = () => {
-    isListening = true;
-    $('orb').classList.add('listening');
-    $('orb-hint').textContent = '🔴 Escuchando…';
+    isListening = true; orb.className = 'listening';
+    setStatus('Escuchando…', 'listening');
     window.speechSynthesis.cancel();
   };
   rec.onresult = e => {
     const t = Array.from(e.results).map(r=>r[0].transcript).join('');
-    $('text-in').value = t;
-    if (e.results[e.results.length-1].isFinal) { stopRec(); askJarvis(t); $('text-in').value=''; }
+    if (e.results[e.results.length-1].isFinal) {
+      stopRec(); setReply('«' + t + '»'); ask(t);
+    } else {
+      setStatus(t, 'listening');
+    }
   };
-  rec.onerror = e => { if (e.error!=='no-speech') $('orb-hint').textContent='⚠️ '+e.error; stopRec(); };
-  rec.onend   = () => stopRec();
+  rec.onerror = e => {
+    if (e.error !== 'no-speech') setStatus('⚠️ ' + e.error);
+    stopRec();
+  };
+  rec.onend = () => { if (isListening) stopRec(); };
 
-  $('orb').addEventListener('click', () => {
+  orb.addEventListener('click', () => {
     if (isListening) { rec.stop(); return; }
-    $('text-in').value = '';
-    try { rec.start(); } catch(e) { $('orb-hint').textContent='⚠️ Sin acceso al micrófono'; }
+    if (orb.classList.contains('speaking')) { window.speechSynthesis.cancel(); return; }
+    setReply(''); $('text-in').value = '';
+    try { rec.start(); } catch(e) { setStatus('⚠️ Sin micrófono'); }
   });
-} else {
-  $('no-speech').style.display = 'block';
-  $('orb').style.opacity = '.3';
-  $('orb').style.cursor  = 'default';
 }
 
 function stopRec() {
-  isListening = false;
-  $('orb').classList.remove('listening');
-  $('orb-hint').textContent = 'Pulsa para hablar';
+  isListening = false; orb.className = 'idle';
+  setStatus('Pulsa el orbe y habla');
 }
 
-// ── Text fallback ─────────────────────────────────────────────
+// ── Text fallback ─────────────────────────────────────
 function sendText() {
-  const t = $('text-in').value.trim();
-  if (!t) return;
-  $('text-in').value = '';
-  askJarvis(t);
+  const t = $('text-in').value.trim(); if (!t) return;
+  $('text-in').value = ''; setReply('«' + t + '»'); ask(t);
 }
 $('btn-send').addEventListener('click', sendText);
 $('text-in').addEventListener('keydown', e => { if(e.key==='Enter') sendText(); });
