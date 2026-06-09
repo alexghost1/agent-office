@@ -290,6 +290,87 @@ async def get_heartbeat():
     return json.loads(f.read_text())
 
 
+# ── JARVIS — HUD del asistente personal ──────────────────────────────
+
+_jarvis_instance = None
+_jarvis_lock = threading.Lock()
+
+
+def _get_jarvis():
+    global _jarvis_instance
+    with _jarvis_lock:
+        if _jarvis_instance is None:
+            from agents.jarvis.agent import JarvisAgent
+            _jarvis_instance = JarvisAgent()
+        return _jarvis_instance
+
+
+@app.get("/jarvis", response_class=HTMLResponse)
+async def jarvis_hud(request: Request):
+    j = _get_jarvis()
+    report = j.report()
+    return templates.TemplateResponse(request, "jarvis.html", {
+        "report": report,
+        "owner_name": os.getenv("OWNER_NAME", "Alexandre"),
+        "history": j.get_chat_history(limit=30),
+        "tasks": j.get_tasks()[-10:][::-1],
+        "thoughts": j.get_mind_log(limit=8),
+    })
+
+
+@app.get("/api/jarvis/status")
+async def jarvis_status():
+    j = _get_jarvis()
+    return JSONResponse(j.report())
+
+
+@app.get("/api/jarvis/history")
+async def jarvis_history(limit: int = 30):
+    j = _get_jarvis()
+    return JSONResponse({"history": j.get_chat_history(limit=limit)})
+
+
+@app.get("/api/jarvis/tasks")
+async def jarvis_tasks():
+    j = _get_jarvis()
+    return JSONResponse({"tasks": j.get_tasks()[-30:][::-1]})
+
+
+@app.get("/api/jarvis/thoughts")
+async def jarvis_thoughts(limit: int = 10):
+    j = _get_jarvis()
+    return JSONResponse({"thoughts": j.get_mind_log(limit=limit)})
+
+
+@app.post("/api/jarvis/chat")
+async def jarvis_chat(message: str = Form(...)):
+    j = _get_jarvis()
+    result = j.chat(message, channel="hud")
+    return JSONResponse(result)
+
+
+@app.post("/api/jarvis/control")
+async def jarvis_control(action: str = Form(...), reason: str = Form("")):
+    j = _get_jarvis()
+    if action == "pause":
+        state = j.pause(reason)
+    elif action == "resume":
+        state = j.resume()
+    elif action == "killswitch_on":
+        state = j.set_killswitch(True)
+    elif action == "killswitch_off":
+        state = j.set_killswitch(False)
+    else:
+        return JSONResponse({"error": f"acción desconocida: {action}"}, status_code=400)
+    return JSONResponse(state)
+
+
+@app.post("/api/jarvis/task")
+async def jarvis_add_task(description: str = Form(...)):
+    j = _get_jarvis()
+    return JSONResponse(j.add_task(description, source="owner"))
+
+
 def main():
     port = int(os.getenv("MISSION_CONTROL_PORT", "8080"))
     print(f"\n  🚀 MISSION CONTROL — http://localhost:{port}")
