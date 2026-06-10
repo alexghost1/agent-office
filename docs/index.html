@@ -152,6 +152,30 @@ html, body {
   border:none; color:#fff; font-weight:700; font-size:16px; cursor:pointer;
 }
 #no-speech { font-size:12px; color:#f87171; display:none; text-align:center; }
+
+/* Voice picker modal */
+#voice-modal {
+  display:none; position:fixed; inset:0; background:rgba(5,7,13,.92);
+  z-index:50; align-items:center; justify-content:center; padding:24px;
+}
+#voice-modal.show { display:flex; }
+#voice-modal-box {
+  background:#0d1220; border:1px solid #1f2937; border-radius:16px;
+  padding:24px; width:100%; max-width:340px; display:flex; flex-direction:column; gap:14px;
+}
+#voice-modal-box h3 { font-size:16px; letter-spacing:1px; }
+#voice-select {
+  width:100%; padding:12px; border-radius:10px;
+  background:#05070d; border:1px solid #1f2937; color:#e0e6f0; font-size:14px;
+}
+.voice-modal-btns { display:flex; gap:10px; }
+.voice-modal-btns button {
+  flex:1; padding:12px; border-radius:10px; border:none; font-weight:700; cursor:pointer; font-size:14px;
+}
+#btn-voice-test { background:#1f2937; color:#e0e6f0; }
+#btn-voice-save { background:linear-gradient(135deg,#2563eb,#7b2ff7); color:#fff; }
+#voice-pitch-row { display:flex; align-items:center; gap:10px; font-size:13px; color:#94a3b8; }
+#voice-pitch-row input { flex:1; }
 </style>
 </head>
 <body>
@@ -172,6 +196,7 @@ html, body {
     <span class="topbar-title">JARVIS</span>
     <div class="topbar-btns">
       <button class="icon-btn on" id="btn-spk" title="Voz">🔊</button>
+      <button class="icon-btn"    id="btn-voice" title="Elegir voz">🎙️</button>
       <button class="icon-btn"    id="btn-key" title="Key">🔑</button>
     </div>
   </div>
@@ -192,6 +217,23 @@ html, body {
   </div>
 </div>
 
+<!-- VOICE PICKER -->
+<div id="voice-modal">
+  <div id="voice-modal-box">
+    <h3>Voz de JARVIS</h3>
+    <select id="voice-select"></select>
+    <div id="voice-pitch-row">
+      <span>Tono</span>
+      <input type="range" id="voice-pitch" min="0.6" max="1.2" step="0.05">
+      <span id="voice-pitch-val"></span>
+    </div>
+    <div class="voice-modal-btns">
+      <button id="btn-voice-test">▶ Probar</button>
+      <button id="btn-voice-save">Guardar</button>
+    </div>
+  </div>
+</div>
+
 <script>
 if ('serviceWorker' in navigator)
   navigator.serviceWorker.register('./sw.js').catch(() => {});
@@ -202,6 +244,8 @@ let apiKey = localStorage.getItem('jarvis_key') || '';
 let ttsOn = true;
 let isListening = false;
 let history = JSON.parse(localStorage.getItem('jarvis_hist') || '[]');
+let savedVoiceName = localStorage.getItem('jarvis_voice_name') || '';
+let savedPitch = parseFloat(localStorage.getItem('jarvis_voice_pitch') || '0.85');
 
 const $ = id => document.getElementById(id);
 const orb = $('orb');
@@ -268,13 +312,20 @@ async function ask(text) {
 }
 
 // ── TTS ──────────────────────────────────────────────
-function speak(text) {
+function pickVoice() {
+  const vv = window.speechSynthesis.getVoices().filter(v=>v.lang.toLowerCase().startsWith('es'));
+  if (savedVoiceName) {
+    const v = vv.find(v=>v.name===savedVoiceName);
+    if (v) return v;
+  }
+  return vv.find(v=>v.localService) || vv[0];
+}
+function speak(text, opts = {}) {
   if (!window.speechSynthesis) return;
   window.speechSynthesis.cancel();
   const utt = new SpeechSynthesisUtterance(text.replace(/[*#_~`•]/g,''));
-  utt.lang = 'es-ES'; utt.rate = 1.0; utt.pitch = 0.85;
-  const vv = window.speechSynthesis.getVoices();
-  const v  = vv.find(v=>v.lang.startsWith('es')&&v.localService) || vv.find(v=>v.lang.startsWith('es'));
+  utt.lang = 'es-ES'; utt.rate = 1.0; utt.pitch = opts.pitch ?? savedPitch;
+  const v = opts.voice || pickVoice();
   if (v) utt.voice = v;
   utt.onstart = () => { orb.className = 'speaking'; setStatus('JARVIS está hablando…', 'speaking'); };
   utt.onend   = () => { orb.className = 'idle'; setStatus('Pulsa el orbe y habla'); };
@@ -287,8 +338,50 @@ $('btn-spk').addEventListener('click', () => {
   $('btn-spk').textContent = ttsOn ? '🔊' : '🔇';
   if (!ttsOn) { window.speechSynthesis.cancel(); orb.className = 'idle'; setStatus('Voz desactivada'); }
 });
+
+// ── Voice picker ──────────────────────────────────────
+function populateVoices() {
+  const sel = $('voice-select');
+  const current = sel.value;
+  sel.innerHTML = '';
+  const vv = window.speechSynthesis.getVoices().filter(v=>v.lang.toLowerCase().startsWith('es'));
+  vv.forEach(v => {
+    const opt = document.createElement('option');
+    opt.value = v.name; opt.textContent = `${v.name} (${v.lang})${v.localService ? '' : ' ☁️'}`;
+    sel.appendChild(opt);
+  });
+  const target = savedVoiceName || current;
+  if (target && vv.some(v=>v.name===target)) sel.value = target;
+}
 if (window.speechSynthesis?.onvoiceschanged !== undefined)
-  window.speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices();
+  window.speechSynthesis.onvoiceschanged = populateVoices;
+populateVoices();
+
+$('voice-pitch').value = savedPitch;
+$('voice-pitch-val').textContent = savedPitch.toFixed(2);
+$('voice-pitch').addEventListener('input', () => {
+  $('voice-pitch-val').textContent = parseFloat($('voice-pitch').value).toFixed(2);
+});
+
+$('btn-voice').addEventListener('click', () => {
+  populateVoices();
+  $('voice-modal').classList.add('show');
+});
+$('voice-modal').addEventListener('click', e => {
+  if (e.target.id === 'voice-modal') $('voice-modal').classList.remove('show');
+});
+$('btn-voice-test').addEventListener('click', () => {
+  const vv = window.speechSynthesis.getVoices();
+  const v = vv.find(v=>v.name===$('voice-select').value);
+  speak('Hola Alexandre, soy JARVIS. Así sonaré a partir de ahora.', { voice: v, pitch: parseFloat($('voice-pitch').value) });
+});
+$('btn-voice-save').addEventListener('click', () => {
+  savedVoiceName = $('voice-select').value;
+  savedPitch = parseFloat($('voice-pitch').value);
+  localStorage.setItem('jarvis_voice_name', savedVoiceName);
+  localStorage.setItem('jarvis_voice_pitch', savedPitch);
+  $('voice-modal').classList.remove('show');
+});
 
 // ── STT ──────────────────────────────────────────────
 const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
