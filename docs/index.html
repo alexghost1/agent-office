@@ -312,6 +312,9 @@ async function ask(text) {
 }
 
 // ── TTS ──────────────────────────────────────────────
+let currentUtterance = null; // evita que el GC de Android corte el audio a mitad
+let voiceWaitTimer = null;
+
 function pickVoice() {
   const vv = window.speechSynthesis.getVoices().filter(v=>v.lang.toLowerCase().startsWith('es'));
   if (savedVoiceName) {
@@ -320,17 +323,39 @@ function pickVoice() {
   }
   return vv.find(v=>v.localService) || vv[0];
 }
-function speak(text, opts = {}) {
-  if (!window.speechSynthesis) return;
-  window.speechSynthesis.cancel();
+function speakNow(text, opts = {}) {
   const utt = new SpeechSynthesisUtterance(text.replace(/[*#_~`•]/g,''));
   utt.lang = 'es-ES'; utt.rate = 1.0; utt.pitch = opts.pitch ?? savedPitch;
   const v = opts.voice || pickVoice();
   if (v) utt.voice = v;
   utt.onstart = () => { orb.className = 'speaking'; setStatus('JARVIS está hablando…', 'speaking'); };
-  utt.onend   = () => { orb.className = 'idle'; setStatus('Pulsa el orbe y habla'); };
-  utt.onerror = () => { orb.className = 'idle'; setStatus('Pulsa el orbe y habla'); };
+  utt.onend   = () => { orb.className = 'idle'; setStatus('Pulsa el orbe y habla'); currentUtterance = null; };
+  utt.onerror = () => { orb.className = 'idle'; setStatus('Pulsa el orbe y habla'); currentUtterance = null; };
+  currentUtterance = utt; // referencia viva mientras dura el habla
   window.speechSynthesis.speak(utt);
+}
+function speak(text, opts = {}) {
+  if (!window.speechSynthesis) return;
+  clearTimeout(voiceWaitTimer);
+  // Android suele "congelar" speechSynthesis tras bloquear pantalla/cambiar de app
+  window.speechSynthesis.resume();
+  if (window.speechSynthesis.speaking || window.speechSynthesis.pending) window.speechSynthesis.cancel();
+
+  const vv = window.speechSynthesis.getVoices().filter(v=>v.lang.toLowerCase().startsWith('es'));
+  if (vv.length === 0 && !opts.voice) {
+    // Las voces aún no han cargado — reintentar hasta 1.5s
+    let tries = 0;
+    voiceWaitTimer = setInterval(() => {
+      tries++;
+      const ready = window.speechSynthesis.getVoices().filter(v=>v.lang.toLowerCase().startsWith('es'));
+      if (ready.length > 0 || tries > 10) {
+        clearInterval(voiceWaitTimer);
+        speakNow(text, opts);
+      }
+    }, 150);
+    return;
+  }
+  speakNow(text, opts);
 }
 $('btn-spk').addEventListener('click', () => {
   ttsOn = !ttsOn;
