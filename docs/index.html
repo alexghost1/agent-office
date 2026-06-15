@@ -238,7 +238,16 @@ html, body {
 if ('serviceWorker' in navigator)
   navigator.serviceWorker.register('./sw.js').catch(() => {});
 
-const SYSTEM = `Eres JARVIS, el asistente personal de Alexandre García. Eres directo, eficiente y cercano. Hablas siempre en español. Responde de forma breve y oral — tus respuestas se leen en voz alta, así que evita listas con viñetas, asteriscos o texto largo. Máximo 3 frases salvo que Alexandre pida más detalle. Eres su brazo derecho digital.`;
+const SYSTEM_BASE = `Eres JARVIS, el asistente personal de Alexandre García. Eres directo, eficiente y cercano. Hablas siempre en español. Responde de forma breve y oral — tus respuestas se leen en voz alta, así que evita listas con viñetas, asteriscos o texto largo. Máximo 3 frases salvo que Alexandre pida más detalle. Eres su brazo derecho digital.`;
+
+let personalContext = '';
+async function loadContext() {
+  try {
+    const r = await fetch('./context.md', { cache: 'no-store' });
+    if (r.ok) personalContext = (await r.text()).trim();
+  } catch(_) {}
+}
+loadContext();
 
 let apiKey = localStorage.getItem('jarvis_key') || '';
 let ttsOn = true;
@@ -296,7 +305,7 @@ async function ask(text) {
       body: JSON.stringify({
         model: 'claude-haiku-4-5-20251001',
         max_tokens: 512,
-        system: SYSTEM,
+        system: SYSTEM_BASE + (personalContext ? `\n\n--- CONTEXTO PERSONAL DE ALEXANDRE ---\n${personalContext}` : ''),
         messages: history,
       }),
     });
