@@ -254,7 +254,7 @@ let ttsOn = true;
 let isListening = false;
 let history = JSON.parse(localStorage.getItem('jarvis_hist') || '[]');
 let savedVoiceName = localStorage.getItem('jarvis_voice_name') || '';
-let savedPitch = parseFloat(localStorage.getItem('jarvis_voice_pitch') || '0.85');
+let savedPitch = parseFloat(localStorage.getItem('jarvis_voice_pitch') || '0.6');
 
 const $ = id => document.getElementById(id);
 const orb = $('orb');
