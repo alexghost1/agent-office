@@ -85,3 +85,6 @@ Ver `.env` — generado por bootstrap.py. NUNCA commitear.
 
 Abre esta carpeta en VSCode con Claude Code activado y usa el archivo
 `CLAUDE_CODE_MASTER_PROMPT.md` para que complete la implementación automáticamente.
+
+Para usar Claude Code desde un tablet/móvil (Termux), ver
+[`docs/tablet-setup.md`](docs/tablet-setup.md).
